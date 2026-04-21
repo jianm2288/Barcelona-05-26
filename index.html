@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Barcelona 5-Day Itinerary</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -174,31 +174,31 @@
         </div>
 
         <div class="days-layout">
-          <nav class="day-nav" aria-label="Itinerary days">
-            <button class="day-tab active" data-day="day1">
+          <nav class="day-nav" aria-label="Itinerary days" role="tablist">
+            <button class="day-tab active" data-day="day1" role="tab" aria-controls="day1" aria-selected="true">
               <span class="day-tab-date">May 17</span>
               <span class="day-tab-title">The Medieval Soul</span>
             </button>
-            <button class="day-tab" data-day="day2">
+            <button class="day-tab" data-day="day2" role="tab" aria-controls="day2" aria-selected="false">
               <span class="day-tab-date">May 18</span>
               <span class="day-tab-title">International Museum Day</span>
             </button>
-            <button class="day-tab" data-day="day3">
+            <button class="day-tab" data-day="day3" role="tab" aria-controls="day3" aria-selected="false">
               <span class="day-tab-date">May 19</span>
               <span class="day-tab-title">The Gaudi Legacy</span>
             </button>
-            <button class="day-tab" data-day="day4">
+            <button class="day-tab" data-day="day4" role="tab" aria-controls="day4" aria-selected="false">
               <span class="day-tab-date">May 20</span>
               <span class="day-tab-title">Montserrat Day Trip</span>
             </button>
-            <button class="day-tab" data-day="day5">
+            <button class="day-tab" data-day="day5" role="tab" aria-controls="day5" aria-selected="false">
               <span class="day-tab-date">May 21</span>
               <span class="day-tab-title">Local Flavors and Departure</span>
             </button>
           </nav>
 
           <div class="day-panels">
-            <article class="day-panel active" id="day1">
+            <article class="day-panel active" id="day1" role="tabpanel">
               <div class="day-header">
                 <div>
                   <p class="eyebrow">Sunday, May 17, 2026</p>
@@ -237,7 +237,7 @@
               </div>
             </article>
 
-            <article class="day-panel" id="day2">
+            <article class="day-panel" id="day2" role="tabpanel" hidden>
               <div class="day-header">
                 <div>
                   <p class="eyebrow">Monday, May 18, 2026</p>
@@ -277,7 +277,7 @@
               </div>
             </article>
 
-            <article class="day-panel" id="day3">
+            <article class="day-panel" id="day3" role="tabpanel" hidden>
               <div class="day-header">
                 <div>
                   <p class="eyebrow">Tuesday, May 19, 2026</p>
@@ -317,7 +317,7 @@
               </div>
             </article>
 
-            <article class="day-panel" id="day4">
+            <article class="day-panel" id="day4" role="tabpanel" hidden>
               <div class="day-header">
                 <div>
                   <p class="eyebrow">Wednesday, May 20, 2026</p>
@@ -358,7 +358,7 @@
               </div>
             </article>
 
-            <article class="day-panel" id="day5">
+            <article class="day-panel" id="day5" role="tabpanel" hidden>
               <div class="day-header">
                 <div>
                   <p class="eyebrow">Thursday, May 21, 2026</p>
