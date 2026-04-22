@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Barcelona 5-Day Itinerary</title>
+  <title>Spain trip - Barcelona / Granada / Seville - May 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,23 +13,23 @@
   <div class="page-shell">
     <header class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">Barcelona • May 17-21, 2026</p>
-        <h1>Destinations, routes, and daily flow for a 5-day city stay.</h1>
+        <p class="eyebrow">Spain Trip Library</p>
+        <h1>Spain trip - Barcelona / Granada / Seville - May 2026</h1>
         <p class="hero-text">
-          A browsable version of the source itinerary, centered on overall destinations and the day-by-day route from the Gothic Quarter to Montserrat and the coast.
+          Shared itinerary pages for Barcelona and the Andalusia extension, with the same destination overview, route-first daily planner, and clickable map links throughout.
         </p>
         <div class="hero-actions">
-          <a href="#days" class="button button-primary">Browse Daily Route</a>
-          <a href="#destinations" class="button button-secondary">See All Destinations</a>
+          <a href="#trips" class="button button-primary">Open Itineraries</a>
+          <a href="#sources" class="button button-secondary">View Source Files</a>
         </div>
       </div>
       <aside class="hero-panel">
-        <h2>Trip Snapshot</h2>
+        <h2>Current Coverage</h2>
         <ul class="snapshot-list">
-          <li>Base: Catalonia Magdalenes Hotel</li>
-          <li>Style: Culture, Gaudi, scenic walking, day trip</li>
-          <li>Transit anchor: Hola Barcelona Travel Card (120 hours)</li>
-          <li>Peak special date: International Museum Day on May 18, 2026</li>
+          <li>Barcelona city stay: May 17-21, 2026</li>
+          <li>Granada and Seville extension: May 21-26, 2026</li>
+          <li>Shared layout, styles, and day navigation</li>
+          <li>One page per itinerary source</li>
         </ul>
       </aside>
     </header>
@@ -37,373 +37,69 @@
     <main>
       <section class="section intro-grid" id="overview">
         <article class="card">
-          <h2>Overall Route Logic</h2>
-          <p>
-            The itinerary groups nearby neighborhoods and transit corridors to keep each day focused: medieval core first, museum-heavy Montjuic next, Gaudi landmarks after that, then a dedicated Montserrat day trip, and a light final day through the market and waterfront before departure.
-          </p>
+          <h2>Consistent Structure</h2>
+          <p>Each itinerary page uses the same order: overview, overall destinations, then a day-by-day route browser with map links attached to the relevant stops.</p>
         </article>
         <article class="card">
-          <h2>Transport Strategy</h2>
-          <p>
-            The document recommends the Hola Barcelona Travel Card for unlimited metro, bus, tram, and urban rail access, including the airport metro connection.
-          </p>
+          <h2>Built For Growth</h2>
+          <p>New source files in <code>raw/</code> can map to new trip pages without replacing earlier trips or changing the shared interaction model.</p>
         </article>
         <article class="card accent">
-          <h2>Best Use Pattern</h2>
-          <p>
-            Use the day switcher below for the route sequence, or scan the destination grid first if you want a quick sense of what the whole trip covers.
-          </p>
+          <h2>Best Way To Use It</h2>
+          <p>Start with the trip card that matches the travel leg you are planning, then jump into the daily tabs for route order and transfer details.</p>
         </article>
       </section>
 
-      <section class="section" id="destinations">
+      <section class="section" id="trips">
         <div class="section-heading">
-          <p class="eyebrow">All Stops</p>
-          <h2>Overall Destinations</h2>
+          <p class="eyebrow">Trip Pages</p>
+          <h2>Published itineraries</h2>
         </div>
-        <div class="destination-grid">
-          <article class="destination-card">
-            <span class="tag">Historic Core</span>
-            <h3>Gothic Quarter</h3>
-            <p>Medieval lanes, cathedral access, and the walkable backbone of the first day.</p>
-            <a class="destination-link" href="https://www.barcelonaturisme.com/wv3/en/page/1052/gothic-quarter.html" target="_blank" rel="noreferrer">Travel info</a>
+        <div class="trip-grid">
+          <article class="trip-card">
+            <span class="tag">Barcelona</span>
+            <h3>Barcelona 5-Day City Stay</h3>
+            <p>Gothic Quarter, Montjuic, Gaudi landmarks, Montserrat, and a final waterfront departure day.</p>
+            <div class="trip-meta">
+              <span>May 17-21, 2026</span>
+              <span>5 days</span>
+            </div>
+            <a class="destination-link" href="pages/barcelona-2026.html">Open itinerary</a>
           </article>
-          <article class="destination-card">
-            <span class="tag">Landmark</span>
-            <h3>Barcelona Cathedral</h3>
-            <p>Gothic focal point reached on foot from the hotel through Carrer del Bisbe.</p>
-            <a class="destination-link" href="https://catedralbcn.org/en/tourist-visit/visiting-hours/" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Neighborhood</span>
-            <h3>El Born</h3>
-            <p>Artisan shopping, narrow streets, and easy access to the Picasso Museum.</p>
-            <a class="destination-link" href="https://www.barcelonabusturistic.cat/en/el-born" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Museum</span>
-            <h3>Picasso Museum Barcelona</h3>
-            <p>Key cultural stop with open-door timing noted in the source itinerary.</p>
-            <a class="destination-link" href="https://museupicassobcn.cat/en" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Performance</span>
-            <h3>Palau de la Musica Catalana</h3>
-            <p>UNESCO-listed concert hall closing out the first day on foot.</p>
-            <a class="destination-link" href="https://www.palaumusica.cat/en/visites" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Hill</span>
-            <h3>Montjuic</h3>
-            <p>Museum-focused hilltop district reached by bus, metro, or funicular.</p>
-            <a class="destination-link" href="https://www.barcelona.cat/en/what-to-do-in-bcn/montjuic-park" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Museum</span>
-            <h3>Fundacio Joan Miro</h3>
-            <p>Modern art stop highlighted for International Museum Day free entry.</p>
-            <a class="destination-link" href="https://www.fmirobcn.org/en/" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Museum</span>
-            <h3>MNAC</h3>
-            <p>Romanesque collection in Palau Nacional, paired with Miro on Day 2.</p>
-            <a class="destination-link" href="https://www.mnac.cat/en/" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Boulevard</span>
-            <h3>Passeig de Gracia</h3>
-            <p>Elegant avenue for Gaudi facade viewing after Montjuic.</p>
-            <a class="destination-link" href="https://www.barcelonaturisme.com/wv3/en/page/1239/passeig-de-gracia.html" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Gaudi</span>
-            <h3>Casa Batllo</h3>
-            <p>Exterior-focused stop with dragon-like roofline and mosaic facade.</p>
-            <a class="destination-link" href="https://www.casabatllo.es/en/" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Gaudi</span>
-            <h3>Casa Mila</h3>
-            <p>Undulating stone landmark that pairs naturally with Casa Batllo.</p>
-            <a class="destination-link" href="https://www.lapedrera.com/en/" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Park</span>
-            <h3>Park Guell</h3>
-            <p>Hilltop Gaudi park reached directly by Bus 24 from Placa de Catalunya.</p>
-            <a class="destination-link" href="https://parkguell.barcelona/en" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Basilica</span>
-            <h3>Sagrada Familia</h3>
-            <p>Main architectural milestone of the trip and core of the third day.</p>
-            <a class="destination-link" href="https://sagradafamilia.org/en" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Day Trip</span>
-            <h3>Montserrat</h3>
-            <p>Monastery and mountain excursion connected by R5 train and ascent rail.</p>
-            <a class="destination-link" href="https://www.montserratvisita.cat/en" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Market</span>
-            <h3>Mercat de la Boqueria</h3>
-            <p>Breakfast and departure-day launch point just off La Rambla.</p>
-            <a class="destination-link" href="https://www.boqueria.barcelona/home" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Waterfront</span>
-            <h3>Port Vell</h3>
-            <p>Harbor stroll option before continuing toward the beach or airport.</p>
-            <a class="destination-link" href="https://www.portdebarcelona.cat/en/port-vell" target="_blank" rel="noreferrer">Travel info</a>
-          </article>
-          <article class="destination-card">
-            <span class="tag">Beach</span>
-            <h3>Barceloneta Beach</h3>
-            <p>Last seaside stop if time allows before leaving the city.</p>
-            <a class="destination-link" href="https://www.barcelona.cat/en/what-to-do-in-bcn/bathing-and-beaches/barceloneta-beach" target="_blank" rel="noreferrer">Travel info</a>
+          <article class="trip-card">
+            <span class="tag">Granada + Seville</span>
+            <h3>Andalusia Extension</h3>
+            <p>Flight to Granada, two days around the Alhambra and Albaicin, then Seville for palaces, cathedral views, and Triana before flying back.</p>
+            <div class="trip-meta">
+              <span>May 21-26, 2026</span>
+              <span>5 days</span>
+            </div>
+            <a class="destination-link" href="pages/andalusia-2026.html">Open itinerary</a>
           </article>
         </div>
       </section>
 
-      <section class="section days-section" id="days">
+      <section class="section" id="sources">
         <div class="section-heading">
-          <p class="eyebrow">Daily Route</p>
-          <h2>Browse each day</h2>
+          <p class="eyebrow">Raw Inputs</p>
+          <h2>Source files in this repository</h2>
         </div>
-
-        <div class="days-layout">
-          <nav class="day-nav" aria-label="Itinerary days" role="tablist">
-            <button class="day-tab active" data-day="day1" role="tab" aria-controls="day1" aria-selected="true">
-              <span class="day-tab-date">May 17</span>
-              <span class="day-tab-title">The Medieval Soul</span>
-            </button>
-            <button class="day-tab" data-day="day2" role="tab" aria-controls="day2" aria-selected="false">
-              <span class="day-tab-date">May 18</span>
-              <span class="day-tab-title">International Museum Day</span>
-            </button>
-            <button class="day-tab" data-day="day3" role="tab" aria-controls="day3" aria-selected="false">
-              <span class="day-tab-date">May 19</span>
-              <span class="day-tab-title">The Gaudi Legacy</span>
-            </button>
-            <button class="day-tab" data-day="day4" role="tab" aria-controls="day4" aria-selected="false">
-              <span class="day-tab-date">May 20</span>
-              <span class="day-tab-title">Montserrat Day Trip</span>
-            </button>
-            <button class="day-tab" data-day="day5" role="tab" aria-controls="day5" aria-selected="false">
-              <span class="day-tab-date">May 21</span>
-              <span class="day-tab-title">Local Flavors and Departure</span>
-            </button>
-          </nav>
-
-          <div class="day-panels">
-            <article class="day-panel active" id="day1" role="tabpanel">
-              <div class="day-header">
-                <div>
-                  <p class="eyebrow">Sunday, May 17, 2026</p>
-                  <h3>The Medieval Soul</h3>
-                </div>
-                <span class="route-pill">Compact walking day</span>
-              </div>
-              <p class="day-summary">
-                A tightly grouped route through the Gothic Quarter, El Born, and Sant Pere, covering major culture stops in roughly a one-mile inner-city arc.
-              </p>
-              <div class="timeline">
-                <article class="timeline-item">
-                  <h4>Morning</h4>
-                  <p>Walk through the Gothic Quarter to Barcelona Cathedral. The source notes Sunday worship hours in the morning and tourist visits later in the day.</p>
-                  <p class="meta">Route note: about 5 minutes via Carrer del Bisbe.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Catalonia+Magdalenes+Hotel,+Carrer+de+les+Magdalenes,+Barcelona/Barcelona+Cathedral,+Pla+de+la+Seu,+Barcelona/" target="_blank" rel="noreferrer">Open map route</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>Afternoon</h4>
-                  <p>Cross into El Born for artisan shops and the Picasso Museum Barcelona.</p>
-                  <p class="meta">Route note: around 11 minutes on foot via Carrer de l'Argenteria.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Barcelona+Cathedral,+Pla+de+la+Seu,+Barcelona/Picasso+Museum,+Carrer+de+Montcada,+Barcelona/" target="_blank" rel="noreferrer">Cathedral to Picasso Museum</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>Evening</h4>
-                  <p>Continue to the Palau de la Musica Catalana for a concert-night finish.</p>
-                  <p class="meta">Route note: around 9 minutes on foot via Carrer d'En Giralt el Pellicer.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Picasso+Museum,+Carrer+de+Montcada,+Barcelona/Palau+de+la+Musica+Catalana,+Carrer+del+Palau+de+la+Musica,+Barcelona/" target="_blank" rel="noreferrer">Picasso Museum to Palau</a>
-                  </div>
-                </article>
-              </div>
-            </article>
-
-            <article class="day-panel" id="day2" role="tabpanel" hidden>
-              <div class="day-header">
-                <div>
-                  <p class="eyebrow">Monday, May 18, 2026</p>
-                  <h3>International Museum Day</h3>
-                </div>
-                <span class="route-pill">Museums + boulevard walk</span>
-              </div>
-              <p class="day-summary">
-                A museum-heavy morning on Montjuic followed by a return to the center for Gaudi facades on Passeig de Gracia.
-              </p>
-              <div class="timeline">
-                <article class="timeline-item">
-                  <h4>Morning</h4>
-                  <p>Head to Montjuic for Fundacio Joan Miro and MNAC, both highlighted in the source for free admission that day.</p>
-                  <p class="meta">Transit note: bus 55 from Placa de Catalunya or L3 to Paral·lel plus the funicular.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Placa+de+Catalunya,+Barcelona/Fundacio+Joan+Miro,+Parc+de+Montjuic,+Barcelona/" target="_blank" rel="noreferrer">Placa de Catalunya to Joan Miro</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>Between Stops</h4>
-                  <p>Walk between Fundacio Joan Miro and MNAC.</p>
-                  <p class="meta">Route note: roughly 9 minutes via Passeig de Santa Madrona.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Fundacio+Joan+Miro,+Parc+de+Montjuic,+Barcelona/Museu+Nacional+d'Art+de+Catalunya,+Palau+Nacional,+Barcelona/" target="_blank" rel="noreferrer">Joan Miro to MNAC</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>Afternoon</h4>
-                  <p>Return to Passeig de Gracia to admire Casa Batllo and Casa Mila from the boulevard.</p>
-                  <p class="meta">Transit note: from Poble Sec, take L3 to Passeig de Gracia; facade-to-facade stroll is about 8 minutes.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Museu+Nacional+d'Art+de+Catalunya,+Palau+Nacional,+Barcelona/Casa+Batllo,+Passeig+de+Gracia,+Barcelona/" target="_blank" rel="noreferrer">MNAC to Casa Batllo</a>
-                    <a class="route-link" href="https://www.google.com/maps/dir/Casa+Batllo,+Passeig+de+Gracia,+Barcelona/La+Pedrera-Casa+Mila,+Passeig+de+Gracia,+Barcelona/" target="_blank" rel="noreferrer">Casa Batllo to Casa Mila</a>
-                  </div>
-                </article>
-              </div>
-            </article>
-
-            <article class="day-panel" id="day3" role="tabpanel" hidden>
-              <div class="day-header">
-                <div>
-                  <p class="eyebrow">Tuesday, May 19, 2026</p>
-                  <h3>The Gaudi Legacy</h3>
-                </div>
-                <span class="route-pill">Hotel to hilltop to basilica</span>
-              </div>
-              <p class="day-summary">
-                A route built around booked Gaudi highlights, using one direct bus uphill and one efficient crosstown bus back toward the Eixample.
-              </p>
-              <div class="timeline">
-                <article class="timeline-item">
-                  <h4>Morning</h4>
-                  <p>Walk from the hotel to Placa de Catalunya, then take Bus 24 straight to Park Guell.</p>
-                  <p class="meta">Route note: about 6 minutes walking to the stop, then roughly 32 minutes on the bus.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Catalonia+Magdalenes+Hotel,+Carrer+de+les+Magdalenes,+Barcelona/Placa+de+Catalunya,+Barcelona/" target="_blank" rel="noreferrer">Hotel to Placa de Catalunya</a>
-                    <a class="route-link" href="https://www.google.com/maps/dir/Placa+de+Catalunya,+Barcelona/Park+Guell,+08024+Barcelona/" target="_blank" rel="noreferrer">Placa de Catalunya to Park Guell</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>Midday</h4>
-                  <p>Explore Park Guell, with the source strongly recommending advance booking for the Monumental Zone.</p>
-                  <p class="meta">Visit note: source lists opening hours as 8:00 AM to 9:30 PM in May.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/search/Park+Guell,+08024+Barcelona/" target="_blank" rel="noreferrer">Open Park Guell on map</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>Afternoon</h4>
-                  <p>Take the V19 toward Barceloneta, get off at Pg de Sant Joan - Rossello, and walk to Sagrada Familia.</p>
-                  <p class="meta">Route note: around 27 minutes total plus a final 10-minute walk.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Park+Guell,+08024+Barcelona/Sagrada+Familia,+Carrer+de+Mallorca,+Barcelona/" target="_blank" rel="noreferrer">Park Guell to Sagrada Familia</a>
-                  </div>
-                </article>
-              </div>
-            </article>
-
-            <article class="day-panel" id="day4" role="tabpanel" hidden>
-              <div class="day-header">
-                <div>
-                  <p class="eyebrow">Wednesday, May 20, 2026</p>
-                  <h3>Montserrat Day Trip</h3>
-                </div>
-                <span class="route-pill">Regional rail excursion</span>
-              </div>
-              <p class="day-summary">
-                A full mountain day using the R5 line from Placa d'Espanya, followed by either the cable car or rack railway ascent to the abbey.
-              </p>
-              <div class="timeline">
-                <article class="timeline-item">
-                  <h4>Morning Departure</h4>
-                  <p>Start at Placa d'Espanya and board the R5 train toward Manresa-Baixador.</p>
-                  <p class="meta">Transit note: the document describes roughly hourly departures and about one hour to the mountain base.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Catalonia+Magdalenes+Hotel,+Carrer+de+les+Magdalenes,+Barcelona/Placa+d'Espanya,+Barcelona/" target="_blank" rel="noreferrer">Hotel to Placa d'Espanya</a>
-                    <a class="route-link" href="https://www.google.com/maps/dir/Placa+d'Espanya,+Barcelona/Monistrol+de+Montserrat,+Barcelona/" target="_blank" rel="noreferrer">Placa d'Espanya to Monistrol</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>Choose Your Ascent</h4>
-                  <p>Either get off at Montserrat-Aeri for the cable car or continue to Monistrol de Montserrat for the Cremallera rack railway.</p>
-                  <p class="meta">Route note: total time to the abbey is about 1 hour 36 minutes via the rack railway.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Montserrat-Aeri,+Barcelona/Abbey+of+Montserrat,+Montserrat/" target="_blank" rel="noreferrer">Cable car option to abbey</a>
-                    <a class="route-link" href="https://www.google.com/maps/dir/Monistrol+de+Montserrat,+Barcelona/Abbey+of+Montserrat,+Montserrat/" target="_blank" rel="noreferrer">Rack railway option to abbey</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>On the Mountain</h4>
-                  <p>See the Black Madonna and take the Sant Joan Funicular for higher views if conditions and schedule align.</p>
-                  <p class="meta">Visit note: the source recommends timed booking for the Madonna due to queues.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Abbey+of+Montserrat,+Montserrat/Sant+Joan+Funicular,+Montserrat/" target="_blank" rel="noreferrer">Abbey to Sant Joan Funicular</a>
-                  </div>
-                </article>
-              </div>
-            </article>
-
-            <article class="day-panel" id="day5" role="tabpanel" hidden>
-              <div class="day-header">
-                <div>
-                  <p class="eyebrow">Thursday, May 21, 2026</p>
-                  <h3>Local Flavors and Departure</h3>
-                </div>
-                <span class="route-pill">Short city finale</span>
-              </div>
-              <p class="day-summary">
-                A low-friction final route from the market to the harbor and possibly the beach, ending with either a quick taxi or a longer public-transit airport connection.
-              </p>
-              <div class="timeline">
-                <article class="timeline-item">
-                  <h4>Morning</h4>
-                  <p>Walk from the hotel to Mercat de la Boqueria for breakfast, ideally early to beat the crowds.</p>
-                  <p class="meta">Route note: about 10 minutes on foot via Carrer de la Portaferrissa.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Catalonia+Magdalenes+Hotel,+Carrer+de+les+Magdalenes,+Barcelona/Mercat+de+la+Boqueria,+La+Rambla,+Barcelona/" target="_blank" rel="noreferrer">Hotel to La Boqueria</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>Final Stroll</h4>
-                  <p>Continue down La Rambla to Port Vell, then extend to Barceloneta Beach if there is enough time before departure.</p>
-                  <p class="meta">Route note: around 17 minutes to Port Vell, plus about 20 more to Barceloneta Beach.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Mercat+de+la+Boqueria,+La+Rambla,+Barcelona/Port+Vell,+Barcelona/" target="_blank" rel="noreferrer">La Boqueria to Port Vell</a>
-                    <a class="route-link" href="https://www.google.com/maps/dir/Port+Vell,+Barcelona/Barceloneta+Beach,+Barcelona/" target="_blank" rel="noreferrer">Port Vell to Barceloneta Beach</a>
-                  </div>
-                </article>
-                <article class="timeline-item">
-                  <h4>Airport Transfer</h4>
-                  <p>Choose a taxi for speed or public transit via D20 to Placa d'Espanya and the Aerobus.</p>
-                  <p class="meta">Travel note: the source estimates 15-20 minutes by taxi or roughly 1 hour by public transit.</p>
-                  <div class="route-links">
-                    <a class="route-link" href="https://www.google.com/maps/dir/Barceloneta+Beach,+Barcelona/Josep+Tarradellas+Barcelona-El+Prat+Airport,+08820+El+Prat+de+Llobregat,+Barcelona/" target="_blank" rel="noreferrer">Barceloneta Beach to airport</a>
-                    <a class="route-link" href="https://www.google.com/maps/dir/Port+Vell,+Barcelona/Josep+Tarradellas+Barcelona-El+Prat+Airport,+08820+El+Prat+de+Llobregat,+Barcelona/" target="_blank" rel="noreferrer">Port Vell to airport</a>
-                  </div>
-                </article>
-              </div>
-            </article>
-          </div>
+        <div class="trip-grid">
+          <article class="trip-card">
+            <span class="tag">DOCX</span>
+            <h3>Barcelona source itinerary</h3>
+            <p>Original source document for the Barcelona city stay page.</p>
+            <a class="destination-link" href="raw/5dayItineary.docx">Open source file</a>
+          </article>
+          <article class="trip-card">
+            <span class="tag">Markdown</span>
+            <h3>Granada and Seville source itinerary</h3>
+            <p>Structured source notes created from the travel details you provided for the Andalusia leg.</p>
+            <a class="destination-link" href="raw/barcelona-granada-seville-2026.md">Open source file</a>
+          </article>
         </div>
       </section>
     </main>
   </div>
-
-  <script src="script.js"></script>
 </body>
 </html>

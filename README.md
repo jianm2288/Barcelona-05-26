@@ -4,7 +4,8 @@ Static itinerary webpages published with GitHub Pages.
 
 ## Local structure
 
-- `index.html`: current published landing page
+- `index.html`: landing page linking all published itineraries
+- `pages/`: one HTML page per itinerary
 - `styles.css`: shared styling
 - `script.js`: shared behavior
 - `raw/`: source itinerary files
@@ -21,4 +22,5 @@ Static itinerary webpages published with GitHub Pages.
 ## Notes
 
 - This workflow publishes the repository root as a static site.
-- If the project grows to multiple itinerary pages, keep shared assets in place and link the pages from `index.html`.
+- Multiple itinerary pages now share the same layout, destination overview, and day-by-day tabbed route browser.
+- Add new itinerary source files under `raw/` and map each one to a stable page in `pages/`.
