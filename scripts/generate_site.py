@@ -1204,7 +1204,7 @@ def render_day_panel(index: int, day: dict[str, Any]) -> str:
     hidden = "" if index == 1 else " hidden"
     stops = "".join(render_stop(stop) for stop in day.get("stops", []))
     day_links = "".join(
-        f'<a class="route-link" href="{escape(link["href"])}" target="_blank" rel="noreferrer">{escape(link["label"])}</a>'
+        render_route_link(link)
         for link in day.get("route_links", [])
         if link.get("href")
     )
@@ -1229,7 +1229,7 @@ def render_day_panel(index: int, day: dict[str, Any]) -> str:
 
 def render_stop(stop: dict[str, Any]) -> str:
     links = "".join(
-        f'<a class="route-link" href="{escape(link["href"])}" target="_blank" rel="noreferrer">{escape(link["label"])}</a>'
+        render_route_link(link)
         for link in stop.get("links", [])
         if link.get("href")
     )
@@ -1243,6 +1243,15 @@ def render_stop(stop: dict[str, Any]) -> str:
                   {links_html}
                 </article>
 """
+
+
+def render_route_link(link: dict[str, str]) -> str:
+    apple_attr = f' data-apple-href="{escape(link["apple_href"])}"' if link.get("apple_href") else ""
+    google_attr = f' data-google-href="{escape(link["href"])}"' if link.get("href") else ""
+    return (
+        f'<a class="route-link" href="{escape(link["href"])}"{apple_attr}{google_attr} rel="noreferrer">'
+        f'{escape(link["label"])}</a>'
+    )
 
 
 def infer_trip_name(itinerary: dict[str, Any], source_path: Path) -> str:
@@ -1735,6 +1744,8 @@ def enrich_route_links(itinerary: dict[str, Any]) -> None:
                 day["route_links"] = inferred
 
         for stop in day.get("stops", []):
+            if stop.get("heading") in {"Plan detail", "Book these first", "Booking priorities"}:
+                continue
             if stop.get("links"):
                 continue
             stop_queries = extract_map_queries_from_stop(stop)
@@ -1778,9 +1789,21 @@ def extract_map_queries(texts: list[str], alias_to_query: dict[str, str]) -> lis
 
 def build_map_links(queries: list[str], multi_label: str, single_label: str) -> list[dict[str, str]]:
     if len(queries) >= 2:
-        return [{"label": multi_label, "href": build_google_maps_directions_url(queries)}]
+        return [
+            {
+                "label": multi_label,
+                "href": build_google_maps_directions_url(queries),
+                "apple_href": build_apple_maps_directions_url(queries),
+            }
+        ]
     if len(queries) == 1:
-        return [{"label": single_label, "href": build_google_maps_search_url(queries[0])}]
+        return [
+            {
+                "label": single_label,
+                "href": build_google_maps_search_url(queries[0]),
+                "apple_href": build_apple_maps_search_url(queries[0]),
+            }
+        ]
     return []
 
 
@@ -1801,6 +1824,20 @@ def build_google_maps_directions_url(queries: list[str]) -> str:
         waypoints = "%7C".join(quote_plus(point) for point in route_points[1:-1])
         url += f"&waypoints={waypoints}"
     return url
+
+
+def build_apple_maps_search_url(query: str) -> str:
+    return f"https://maps.apple.com/?q={quote_plus(query)}"
+
+
+def build_apple_maps_directions_url(queries: list[str]) -> str:
+    route_points = queries[:9]
+    if len(route_points) < 2:
+        return build_apple_maps_search_url(route_points[0]) if route_points else ""
+
+    origin = quote_plus(route_points[0])
+    destination = quote_plus(route_points[-1])
+    return f"https://maps.apple.com/?saddr={origin}&daddr={destination}&dirflg=w"
 
 
 def render_rich_text(text: str, lookup: dict[str, str]) -> str:
