@@ -5,6 +5,10 @@ const routeLinks = document.querySelectorAll(".route-link");
 const isAppleMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 function activateDay(dayId) {
+  if (!dayId) {
+    return;
+  }
+
   tabs.forEach((tab) => {
     const isActive = tab.dataset.day === dayId;
     tab.classList.toggle("active", isActive);
@@ -29,8 +33,43 @@ function focusDestinationCard(targetId) {
   });
 }
 
+function handleDayTabSelection(tab, event) {
+  if (!tab) {
+    return;
+  }
+
+  if (event) {
+    event.preventDefault();
+  }
+
+  const dayId = tab.dataset.day;
+  activateDay(dayId);
+
+  if (window.location.hash !== `#${dayId}`) {
+    history.replaceState(null, "", `#${dayId}`);
+  }
+}
+
+function syncFromHash() {
+  const hashId = window.location.hash.replace("#", "");
+  const hashMatchesDay = panels.some((panel) => panel.id === hashId);
+
+  if (hashMatchesDay) {
+    activateDay(hashId);
+    focusDestinationCard("");
+    return;
+  }
+
+  if (tabs.length > 0) {
+    activateDay(document.querySelector(".day-tab.active")?.dataset.day ?? tabs[0].dataset.day);
+  }
+
+  focusDestinationCard(hashId);
+}
+
 tabs.forEach((tab) => {
-  tab.addEventListener("click", () => activateDay(tab.dataset.day));
+  tab.addEventListener("click", (event) => handleDayTabSelection(tab, event));
+  tab.addEventListener("touchend", (event) => handleDayTabSelection(tab, event), { passive: false });
   tab.addEventListener("keydown", (event) => {
     const currentIndex = Array.from(tabs).indexOf(tab);
     let nextIndex = currentIndex;
@@ -46,13 +85,10 @@ tabs.forEach((tab) => {
     event.preventDefault();
     const nextTab = tabs[nextIndex];
     activateDay(nextTab.dataset.day);
+    history.replaceState(null, "", `#${nextTab.dataset.day}`);
     nextTab.focus();
   });
 });
-
-if (tabs.length > 0) {
-  activateDay(document.querySelector(".day-tab.active")?.dataset.day ?? tabs[0].dataset.day);
-}
 
 document.querySelectorAll(".inline-destination-link").forEach((link) => {
   link.addEventListener("click", () => {
@@ -61,13 +97,8 @@ document.querySelectorAll(".inline-destination-link").forEach((link) => {
   });
 });
 
-window.addEventListener("hashchange", () => {
-  focusDestinationCard(window.location.hash.replace("#", ""));
-});
-
-if (window.location.hash) {
-  focusDestinationCard(window.location.hash.replace("#", ""));
-}
+window.addEventListener("hashchange", syncFromHash);
+syncFromHash();
 
 routeLinks.forEach((link) => {
   link.addEventListener("click", (event) => {

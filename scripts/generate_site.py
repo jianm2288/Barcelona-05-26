@@ -625,7 +625,7 @@ def parse_seed_page(path: Path) -> dict[str, Any]:
         )
 
     tab_map = {}
-    for tab in document.xpath("//button[contains(@class, 'day-tab')]"):
+    for tab in document.xpath("//*[self::button or self::a][contains(@class, 'day-tab')]"):
         tab_map[tab.get("data-day")] = {
             "date_short": normalize_text(text_or_default(tab, ".//span[contains(@class, 'day-tab-date')]")),
             "tab_title": normalize_text(text_or_default(tab, ".//span[contains(@class, 'day-tab-title')]")),
@@ -1192,10 +1192,10 @@ def render_day_tab(index: int, day: dict[str, Any]) -> str:
     active = " active" if index == 1 else ""
     selected = "true" if index == 1 else "false"
     return f"""
-            <button class="day-tab{active}" data-day="day{index}" role="tab" aria-controls="day{index}" aria-selected="{selected}">
+            <a class="day-tab{active}" data-day="day{index}" href="#day{index}" role="tab" aria-controls="day{index}" aria-selected="{selected}">
               <span class="day-tab-date">{escape(day.get("date_short", f"Day {index}"))}</span>
               <span class="day-tab-title">{escape(day.get("tab_title", day.get("title", f"Day {index}")))}</span>
-            </button>
+            </a>
 """
 
 
