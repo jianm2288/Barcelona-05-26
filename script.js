@@ -43,13 +43,27 @@ function revealDayPanel(dayId) {
   }
 
   const panel = document.getElementById(dayId);
+  const panelRegion = document.querySelector(".day-panels");
   if (!panel) {
     return;
   }
 
+  const scrollTarget = () => {
+    const target = panelRegion ?? panel;
+    const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - 12);
+
+    window.scrollTo({
+      top,
+      behavior: "smooth",
+    });
+
+    window.setTimeout(() => {
+      panel.focus({ preventScroll: true });
+    }, 220);
+  };
+
   requestAnimationFrame(() => {
-    panel.focus({ preventScroll: true });
-    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    requestAnimationFrame(scrollTarget);
   });
 }
 
