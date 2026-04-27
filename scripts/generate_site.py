@@ -9,6 +9,7 @@ from html import escape
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote
+from urllib.parse import quote_plus
 
 from lxml import etree, html
 
@@ -20,6 +21,31 @@ MANIFEST_PATH = ROOT / "site_manifest.json"
 
 WORD_NS = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
 REL_NS = {"rel": "http://schemas.openxmlformats.org/package/2006/relationships"}
+MAP_CONTEXT_BY_TAG = {
+    "Barcelona": "Barcelona, Spain",
+    "Granada": "Granada, Spain",
+    "Seville": "Seville, Spain",
+    "Costa Brava": "Tossa de Mar, Girona, Spain",
+    "Gaudi": "Barcelona, Spain",
+    "Landmark": "Barcelona, Spain",
+    "Historic Core": "Barcelona, Spain",
+    "Art": "Barcelona, Spain",
+    "Square": "Barcelona, Spain",
+    "Performance": "Barcelona, Spain",
+    "Neighborhood": "Barcelona, Spain",
+    "Church": "Barcelona, Spain",
+    "Museum": "Barcelona, Spain",
+    "Park": "Barcelona, Spain",
+    "Waterfront": "Barcelona, Spain",
+    "Boulevard": "Barcelona, Spain",
+    "Basilica": "Barcelona, Spain",
+    "Modernisme": "Barcelona, Spain",
+    "Transit": "Barcelona, Spain",
+    "Shopping": "Barcelona, Spain",
+    "Day Trip": "Sitges, Spain",
+    "Viewpoint": "Sitges, Spain",
+    "Museum District": "Sitges, Spain",
+}
 SPAIN_DAY_HEADING_RE = re.compile(
     r"^(May\s+\d{1,2}),\s+(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+[—-]\s+(.+)$"
 )
@@ -1177,6 +1203,12 @@ def render_day_panel(index: int, day: dict[str, Any]) -> str:
     active = " active" if index == 1 else ""
     hidden = "" if index == 1 else " hidden"
     stops = "".join(render_stop(stop) for stop in day.get("stops", []))
+    day_links = "".join(
+        f'<a class="route-link" href="{escape(link["href"])}" target="_blank" rel="noreferrer">{escape(link["label"])}</a>'
+        for link in day.get("route_links", [])
+        if link.get("href")
+    )
+    day_links_html = f'<div class="route-links day-route-links">{day_links}</div>' if day_links else ""
     return f"""
             <article class="day-panel{active}" id="day{index}" role="tabpanel"{hidden}>
               <div class="day-header">
@@ -1187,6 +1219,7 @@ def render_day_panel(index: int, day: dict[str, Any]) -> str:
                 <span class="route-pill">{escape(day.get("pill", "Daily route"))}</span>
               </div>
               <p class="day-summary">{render_rich_text(day.get("summary", ""), day.get("destination_links", {}))}</p>
+              {day_links_html}
               <div class="timeline">
                 {stops}
               </div>
@@ -1468,13 +1501,16 @@ def parse_spain_trip_day_block(block: list[str]) -> dict[str, Any]:
         lines.extend(split_spain_day_line(line))
 
     stops = parse_spain_trip_stops(lines)
+    summary_stop = first(
+        [stop for stop in stops if stop.get("heading") not in {"Plan detail", "Book these first", "Booking priorities"}]
+    ) or first(stops)
     return {
         "date_short": month_day,
         "tab_title": shorten_spain_day_title(title),
         "full_date": f"{weekday}, {month_day}, 2026",
         "title": title,
         "pill": infer_spain_day_pill(title),
-        "summary": stops[0]["text"] if stops else "",
+        "summary": summary_stop["text"] if summary_stop else "",
         "stops": stops,
     }
 
@@ -1657,18 +1693,114 @@ def destination_referenced(item: dict[str, Any], days: list[dict[str, Any]]) -> 
 
 def prepare_destination_linking(itinerary: dict[str, Any]) -> None:
     lookup = {}
+    map_queries = {}
     for destination in itinerary.get("destinations", []):
         destination_id = f"destination-{slugify(destination['title'])}"
         destination["id"] = destination_id
         destination["aliases"] = destination.get("aliases") or [destination["title"]]
+        destination["map_query"] = destination.get("map_query") or build_default_map_query(destination)
         for alias in destination["aliases"]:
             lookup[alias] = destination_id
+            map_queries[alias] = destination["map_query"]
 
     itinerary["destination_lookup"] = lookup
+    itinerary["destination_map_queries"] = map_queries
     for day in itinerary.get("days", []):
         day["destination_links"] = lookup
+        day["destination_map_queries"] = map_queries
         for stop in day.get("stops", []):
             stop["destination_links"] = lookup
+            stop["destination_map_queries"] = map_queries
+
+    enrich_route_links(itinerary)
+
+
+def build_default_map_query(destination: dict[str, Any]) -> str:
+    title = destination.get("title", "")
+    tag = destination.get("tag", "")
+    context = MAP_CONTEXT_BY_TAG.get(tag)
+    if not context:
+        return destination.get("aliases", [title])[0]
+    if context.lower() in title.lower():
+        return title
+    return f"{title}, {context}"
+
+
+def enrich_route_links(itinerary: dict[str, Any]) -> None:
+    for day in itinerary.get("days", []):
+        if not day.get("route_links"):
+            day_queries = extract_map_queries_from_day(day)
+            inferred = build_map_links(day_queries, "Open day route", "Open day map")
+            if inferred:
+                day["route_links"] = inferred
+
+        for stop in day.get("stops", []):
+            if stop.get("links"):
+                continue
+            stop_queries = extract_map_queries_from_stop(stop)
+            inferred = build_map_links(stop_queries, "Open route segment", "Open stop map")
+            if inferred:
+                stop["links"] = inferred
+
+
+def extract_map_queries_from_day(day: dict[str, Any]) -> list[str]:
+    texts = [day.get("summary", "")]
+    for stop in day.get("stops", []):
+        if stop.get("heading") in {"Plan detail", "Book these first", "Booking priorities"}:
+            continue
+        texts.extend([stop.get("heading", ""), stop.get("text", ""), stop.get("meta", "")])
+    return extract_map_queries(texts, day.get("destination_map_queries", {}))
+
+
+def extract_map_queries_from_stop(stop: dict[str, Any]) -> list[str]:
+    texts = [stop.get("heading", ""), stop.get("text", ""), stop.get("meta", "")]
+    return extract_map_queries(texts, stop.get("destination_map_queries", {}))
+
+
+def extract_map_queries(texts: list[str], alias_to_query: dict[str, str]) -> list[str]:
+    aliases = sorted(alias_to_query.keys(), key=len, reverse=True)
+    if not aliases:
+        return []
+
+    pattern = re.compile("|".join(re.escape(alias) for alias in aliases))
+    ordered: list[str] = []
+    seen = set()
+    for text in texts:
+        if not text:
+            continue
+        for match in pattern.finditer(text):
+            query = alias_to_query.get(match.group(0))
+            if query and query not in seen:
+                seen.add(query)
+                ordered.append(query)
+    return ordered
+
+
+def build_map_links(queries: list[str], multi_label: str, single_label: str) -> list[dict[str, str]]:
+    if len(queries) >= 2:
+        return [{"label": multi_label, "href": build_google_maps_directions_url(queries)}]
+    if len(queries) == 1:
+        return [{"label": single_label, "href": build_google_maps_search_url(queries[0])}]
+    return []
+
+
+def build_google_maps_search_url(query: str) -> str:
+    return f"https://www.google.com/maps/search/?api=1&query={quote_plus(query)}"
+
+
+def build_google_maps_directions_url(queries: list[str]) -> str:
+    route_points = queries[:9]
+    if len(route_points) < 2:
+        return build_google_maps_search_url(route_points[0]) if route_points else ""
+
+    origin = quote_plus(route_points[0])
+    destination = quote_plus(route_points[-1])
+    url = f"https://www.google.com/maps/dir/?api=1&travelmode=walking&origin={origin}&destination={destination}"
+    if len(route_points) > 2:
+        # Use an encoded separator so Safari on iPhone treats the full waypoint list as one query value.
+        waypoints = "%7C".join(quote_plus(point) for point in route_points[1:-1])
+        url += f"&waypoints={waypoints}"
+    return url
 
 
 def render_rich_text(text: str, lookup: dict[str, str]) -> str:
