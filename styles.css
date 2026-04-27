@@ -407,6 +407,7 @@ code {
   padding: clamp(1.15rem, 2vw, 1.5rem);
   border-radius: 30px;
   min-width: 0;
+  scroll-margin-top: 1rem;
 }
 
 .day-panel.active {

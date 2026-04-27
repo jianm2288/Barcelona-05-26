@@ -3,6 +3,7 @@ const panels = document.querySelectorAll(".day-panel");
 const destinationCards = document.querySelectorAll(".destination-card");
 const routeLinks = document.querySelectorAll(".route-link");
 const isAppleMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isCompactDayLayout = window.matchMedia("(max-width: 1024px)");
 
 function activateDay(dayId) {
   if (!dayId) {
@@ -25,11 +26,30 @@ function activateDay(dayId) {
 
 function focusDestinationCard(targetId) {
   if (!targetId) {
+    destinationCards.forEach((card) => {
+      card.classList.remove("is-focused");
+    });
     return;
   }
 
   destinationCards.forEach((card) => {
     card.classList.toggle("is-focused", card.id === targetId);
+  });
+}
+
+function revealDayPanel(dayId) {
+  if (!dayId || !isCompactDayLayout.matches) {
+    return;
+  }
+
+  const panel = document.getElementById(dayId);
+  if (!panel) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    panel.focus({ preventScroll: true });
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
 
@@ -44,6 +64,7 @@ function handleDayTabSelection(tab, event) {
 
   const dayId = tab.dataset.day;
   activateDay(dayId);
+  revealDayPanel(dayId);
 
   if (window.location.hash !== `#${dayId}`) {
     history.replaceState(null, "", `#${dayId}`);
@@ -57,6 +78,7 @@ function syncFromHash() {
   if (hashMatchesDay) {
     activateDay(hashId);
     focusDestinationCard("");
+    revealDayPanel(hashId);
     return;
   }
 
@@ -85,6 +107,7 @@ tabs.forEach((tab) => {
     event.preventDefault();
     const nextTab = tabs[nextIndex];
     activateDay(nextTab.dataset.day);
+    revealDayPanel(nextTab.dataset.day);
     history.replaceState(null, "", `#${nextTab.dataset.day}`);
     nextTab.focus();
   });

@@ -1210,7 +1210,7 @@ def render_day_panel(index: int, day: dict[str, Any]) -> str:
     )
     day_links_html = f'<div class="route-links day-route-links">{day_links}</div>' if day_links else ""
     return f"""
-            <article class="day-panel{active}" id="day{index}" role="tabpanel"{hidden}>
+            <article class="day-panel{active}" id="day{index}" role="tabpanel" tabindex="-1"{hidden}>
               <div class="day-header">
                 <div>
                   <p class="eyebrow">{escape(day.get("full_date", day.get("date_short", f"Day {index}")))}</p>
