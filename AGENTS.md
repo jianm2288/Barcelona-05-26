@@ -2,109 +2,161 @@
 
 ## Purpose
 
-This project turns itinerary source files in `raw/` into polished, browsable webpages.
+This repository generates static trip-planner pages from itinerary source files.
 
-The agent's job is not to maintain only one trip page. It must support multiple itinerary source files, generate one webpage per itinerary, and keep all generated pages aligned to the same content and interaction requirements.
+The agent's job is to preserve one shared trip-planner product while itinerary content changes over time. The content can change freely. The product shell, interaction model, mobile behavior, and performance characteristics must remain intentionally stable unless a shared improvement is being made.
 
 ## Source Of Truth
 
-- Treat files under `raw/` as the canonical itinerary inputs.
-- Expect more than one source file over time.
-- Do not hardcode logic for a single file such as `raw/5dayItineary.docx`.
-- Preserve useful structure from the source documents, especially:
-  - overall trip summary and destination coverage
-  - per-day breakdowns
-  - destination hyperlinks
-  - daily navigation or map-route hyperlinks
+- Treat files under `raw/` as the only canonical publishing inputs.
+- Do not treat `archive/` as a live source directory.
+- Expect the set of files in `raw/` to change over time.
+- Expect the number of itineraries to grow, shrink, or be replaced.
+- Do not hardcode logic that only works for a single filename unless it is part of an explicitly scoped parser path and still fits within the multi-itinerary generator model.
 
-## Core Requirements For Every Webpage
+## Current Repo Model
 
-Every itinerary webpage must include all of the following:
+The repository currently behaves as follows:
 
-- An overview of the trip's overall destinations.
-- Clickable links for destinations whenever the source provides them or they can be clearly carried over from the itinerary.
-- A day-by-day route presentation.
-- Clickable map/navigation links for each daily route segment whenever the source provides them.
-- A consistent information architecture across all itinerary pages so users can move between trips without relearning the UI.
+- `scripts/generate_site.py`
+  The shared generator and the primary place for parsing, mapping, and rendering logic.
+- `site_manifest.json`
+  Stable source-to-slug mapping.
+- `index.html`
+  Generated landing page.
+- `pages/`
+  Generated itinerary pages.
+- `styles.css`
+  Shared visual system for every page.
+- `script.js`
+  Shared interaction layer for day tabs, destination highlighting, and route-link handling.
+- `archive/`
+  Historical raw files, seed pages, and references. Useful context, but not a live publish input directory.
 
-## Multi-Itinerary Behavior
+## Non-Negotiable Product Invariants
 
-The agent must support multiple source itineraries and multiple output pages.
+When content changes, all of the following must remain stable unless there is an intentional shared product update:
 
-- Scan `raw/` for all supported itinerary inputs before making changes.
-- Create or maintain one output webpage per itinerary source file.
-- Use a stable naming convention so each source maps predictably to one webpage.
-- Avoid overwriting one itinerary page with another.
-- If an itinerary already has a webpage, update it in place instead of duplicating it.
-- If shared layout, styling, or interaction code is improved for one itinerary, apply that improvement in the shared implementation so all itinerary pages stay consistent.
+- same overall information architecture
+- same page section order
+- same day-navigation model
+- same destination-card treatment
+- same route-link treatment
+- same mobile interaction model
+- same accessibility baseline
+- same static-site performance posture
 
-## Recommended Project Shape
+Do not let display style, behavior, or perceived performance drift because:
 
-Prefer this structure unless the repository evolves in a better direction:
+- a new itinerary is added
+- an old itinerary is removed
+- one itinerary is more detailed than another
+- a source document is reformatted
+- a parser branch is updated for one trip
 
-- Shared assets:
-  - `styles.css`
-  - `script.js`
-- Output pages:
-  - one HTML file per itinerary, or
-  - a dedicated pages folder if the project grows
-- Raw inputs:
-  - `raw/`
+## Required Rendering Behavior
 
-If multiple pages are present, add or maintain a simple index or landing page that links to each generated itinerary page.
+Every published itinerary page must include:
+
+- a trip hero area
+- a trip snapshot
+- overview cards
+- an overall destination section
+- a day-by-day route browser
+- clickable destination links where available or clearly inferable
+- clickable route or map links at the day level and stop level where available or inferable
+
+The landing page must:
+
+- list every itinerary generated from `raw/`
+- link to every generated itinerary page
+- not list archived-only inputs as live pages
+
+## Multi-Itinerary Rules
+
+- Scan all supported files in `raw/` before making generation changes.
+- Generate exactly one current webpage per canonical source file in `raw/`.
+- Use `site_manifest.json` to preserve stable slugs.
+- Update an existing itinerary page in place when its source stays mapped to the same slug.
+- Never overwrite one itinerary with another because of a hardcoded filename assumption.
+- If a fix improves shared layout or interaction, implement it in shared code so all current and future itineraries inherit it.
+
+## Shared-Code Rule
+
+If the change affects any of the following, implement it in shared code instead of patching a single generated page:
+
+- parsing rules
+- HTML structure
+- route-link generation
+- mobile interaction
+- desktop interaction
+- styling
+- accessibility behavior
+
+The correct places for shared changes are:
+
+- `scripts/generate_site.py`
+- `styles.css`
+- `script.js`
+
+Do not hand-maintain generated page behavior as a one-off fix unless the repo is explicitly being restructured away from generation.
 
 ## Content Extraction Rules
 
-When converting an itinerary source into a webpage:
+When converting a source itinerary into a page:
 
-- Extract the trip title, dates, base location, and trip theme when available.
-- Build a destination overview section from the complete set of noteworthy places in the itinerary.
-- Build daily sections from the itinerary's chronological structure.
-- Preserve the intended route order within each day.
-- Carry over external links from the source document instead of replacing them with plain text.
-- Keep map-route links directly attached to the relevant stop or route segment so they are easy to use.
-- Summarize long prose into web-friendly copy only when needed, but do not remove important logistics.
+- preserve overall trip summary when available
+- preserve destination coverage
+- preserve chronological daily order
+- preserve or infer route order within each day
+- preserve embedded links from `.docx` when possible
+- keep route links attached to the relevant day or stop
+- keep important logistics, timing anchors, and transfers
+- summarize prose only enough to fit the shared web format without losing key planning detail
 
-## Consistency Rules
+## Performance And Drift Rules
 
-All itinerary pages should share the same product expectations:
+The planner should remain a lightweight static site:
 
-- same page sections in roughly the same order
-- same visual system
-- same interaction model for daily browsing
-- same treatment of destination cards and route links
-- same accessibility baseline
+- keep shared JS small and focused
+- avoid page-specific JS forks
+- avoid introducing heavy client-side frameworks for content browsing
+- avoid duplicating large CSS or script blocks into individual itinerary pages
+- keep behavior fixes centralized so future regeneration does not regress older fixes
 
-Differences between pages should come from the itinerary content, not from ad hoc layout changes.
+When raw materials change, verify that:
 
-## Maintenance Rules
+- existing tap and click behavior still works
+- day navigation still opens the correct day panel
+- route links still open correctly on both desktop and mobile
+- location disambiguation still points to the intended city or country
+- generated pages remain fast and static
 
-When new source files appear in `raw/`:
+## Archive Rules
 
-- detect them
-- generate a matching webpage
-- ensure shared assets still work for all pages
-- update any landing or cross-linking page if one exists
-
-When an existing source file changes:
-
-- update only the corresponding webpage content
-- keep the shared layout and behavior intact unless a shared improvement is needed
+- `archive/` is reference material, not the live planner input.
+- Archived raw files may inform parser development or historical comparison.
+- Archived seed pages may be used as reference, but not as a substitute for maintaining the shared generator.
+- Do not accidentally re-publish archived inputs unless they are intentionally moved or remapped into the live source flow.
 
 ## Quality Bar
 
 Before finishing work, verify:
 
-- every itinerary source in `raw/` has a corresponding webpage
-- every webpage includes overall destinations and daily routes
+- every supported file in `raw/` has one generated page
+- `index.html` reflects the current `raw/` set
+- all itinerary pages still share the same shell and interaction model
 - destination links are clickable
 - route or map links are clickable
-- no existing itinerary page was accidentally broken while updating another one
-- shared CSS/JS still supports all itinerary pages
+- mobile interaction still works
+- shared CSS and JS still support all pages
+- no behavior fix exists only in one generated page
 
 ## Implementation Guidance
 
-- Favor reusable templates, data structures, and shared rendering patterns over one-off hardcoded HTML.
-- If the input format is `.docx`, preserve embedded hyperlinks during extraction.
-- Keep content encoding clean and fix obvious text corruption introduced during conversion.
-- Prefer maintainable generation/update workflows over manual page-by-page edits when the number of itineraries grows.
+- Prefer reusable parser and renderer paths over manual HTML editing.
+- Preserve embedded hyperlinks from `.docx` when possible.
+- Keep source-to-slug mapping stable with `site_manifest.json`.
+- Fix text corruption introduced during extraction.
+- If itinerary-specific parsing is needed, keep it inside the generator while preserving the shared rendering contract.
+- Treat generated pages as outputs of the system, not primary authored source.
