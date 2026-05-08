@@ -46,6 +46,9 @@ MAP_CONTEXT_BY_TAG = {
     "Viewpoint": "Sitges, Spain",
     "Museum District": "Sitges, Spain",
 }
+BARCELONA_HOTEL_NAME = "Renaissance Barcelona Hotel"
+BARCELONA_HOTEL_QUERY = f"{BARCELONA_HOTEL_NAME}, Pau Claris 122, Barcelona, Spain"
+BARCELONA_AIRPORT_QUERY = "Josep Tarradellas Barcelona-El Prat Airport, Barcelona, Spain"
 SPAIN_DAY_HEADING_RE = re.compile(
     r"^(May\s+\d{1,2}),\s+(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+[—-]\s+(.+)$"
 )
@@ -251,6 +254,22 @@ BARCELONA_DESTINATION_OVERRIDES = [
 ]
 
 SPAIN_DESTINATION_OVERRIDES = [
+    {
+        "title": BARCELONA_HOTEL_NAME,
+        "tag": "Barcelona",
+        "text": "Barcelona hotel base on Pau Claris in Eixample, still walkable to the Gothic Quarter and especially convenient for Passeig de Gracia, Casa Batllo, and Casa Mila.",
+        "link_href": "https://www.google.com/maps/search/?api=1&query=Renaissance+Barcelona+Hotel%2C+Pau+Claris+122%2C+Barcelona%2C+Spain",
+        "aliases": [BARCELONA_HOTEL_NAME, "Barcelona hotel"],
+        "map_query": BARCELONA_HOTEL_QUERY,
+    },
+    {
+        "title": "Barcelona-El Prat Airport",
+        "tag": "Barcelona",
+        "text": "Barcelona airport anchor for the arrival transfer to the Renaissance and the May 21 flight to Granada.",
+        "link_href": "https://www.google.com/maps/search/?api=1&query=Josep+Tarradellas+Barcelona-El+Prat+Airport%2C+Barcelona%2C+Spain",
+        "aliases": ["Barcelona-El Prat Airport", "BCN airport", "Barcelona airport"],
+        "map_query": BARCELONA_AIRPORT_QUERY,
+    },
     {
         "title": "Gothic Quarter",
         "tag": "Barcelona",
@@ -795,6 +814,7 @@ def parse_spain_trip_docx_source(path: Path) -> dict[str, Any]:
         ),
         "snapshot": [
             "Barcelona: May 16–20",
+            f"Barcelona hotel: {BARCELONA_HOTEL_NAME}, Pau Claris 122",
             "Granada: May 21–23",
             "Seville: May 23–26",
             "Fixed entry: Sagrada Família on May 19 at 1:30 PM",
@@ -804,6 +824,11 @@ def parse_spain_trip_docx_source(path: Path) -> dict[str, Any]:
             {
                 "title": "Trip Shape",
                 "text": "This source combines five Barcelona days, a full Tossa de Mar excursion, two Granada days, and the final Seville stretch into one continuous May itinerary.",
+                "accent": False,
+            },
+            {
+                "title": "Barcelona Hotel Note",
+                "text": "The Barcelona base is Renaissance Barcelona Hotel on Pau Claris in Eixample. Keep the itinerary as-is, but use the hotel-based map links for arrival, Gothic Quarter walks, Gaudi/Eixample days, Tossa de Mar, and the May 21 airport transfer.",
                 "accent": False,
             },
             {
@@ -898,6 +923,9 @@ def build_itinerary(source_path: Path, manifest_entry: ManifestEntry | None) -> 
         data = merge_sparse_source(data, raw_data)
     else:
         data = merge_itinerary(data, raw_data)
+
+    if source_path.name == "May 26 Spain Trip.docx":
+        apply_barcelona_hotel_route_context(data)
 
     slug = manifest_entry.slug if manifest_entry else slugify(source_path.stem)
     data["slug"] = slug
@@ -1383,11 +1411,12 @@ def extract_docx_paragraph_data(path: Path) -> list[dict[str, Any]]:
                     if href:
                         links.append({"text": text, "href": href})
             elif tag == "r":
-                text = "".join(child.xpath(".//w:t/text()", namespaces=WORD_NS))
-                if text:
-                    parts.append(text)
-                if child.xpath(".//w:br", namespaces=WORD_NS):
-                    parts.append("\n")
+                for node in child.iter():
+                    node_tag = etree.QName(node).localname
+                    if node_tag == "t" and node.text:
+                        parts.append(node.text)
+                    elif node_tag == "br":
+                        parts.append("\n")
 
         combined = normalize_text("".join(parts).replace("\n ", "\n"))
         if combined:
@@ -1664,6 +1693,7 @@ def build_barcelona_destinations(days: list[dict[str, Any]]) -> list[dict[str, A
                 "link_label": "Travel info",
                 "link_href": item["link_href"],
                 "aliases": item["aliases"],
+                "map_query": item.get("map_query"),
             }
             destinations.append(card)
             seen.add(item["title"])
@@ -1686,9 +1716,97 @@ def build_spain_destinations(days: list[dict[str, Any]], source_links: dict[str,
                     "link_label": "Travel info",
                     "link_href": link_href,
                     "aliases": item["aliases"],
+                    "map_query": item.get("map_query"),
                 }
             )
     return destinations
+
+
+def apply_barcelona_hotel_route_context(itinerary: dict[str, Any]) -> None:
+    for day in itinerary.get("days", []):
+        title = day.get("title", "")
+        if title == "Arrive Barcelona + Gothic Quarter evening":
+            day["route_links"] = [
+                build_route_link("BCN airport to hotel", [BARCELONA_AIRPORT_QUERY, BARCELONA_HOTEL_QUERY], "driving"),
+                build_route_link(
+                    "Hotel to Gothic Quarter walk",
+                    [
+                        BARCELONA_HOTEL_QUERY,
+                        "Gothic Quarter, Barcelona, Spain",
+                        "Barcelona Cathedral, Barcelona, Spain",
+                        "Plaça Reial, Barcelona, Spain",
+                    ],
+                    "walking",
+                ),
+            ]
+        elif title == "Picasso Museum + El Born + Palau de la Música":
+            day["route_links"] = [
+                build_route_link(
+                    "Hotel to Sunday route",
+                    [
+                        BARCELONA_HOTEL_QUERY,
+                        "Picasso Museum Barcelona, Barcelona, Spain",
+                        "El Born, Barcelona, Spain",
+                        "Santa Maria del Mar, Barcelona, Spain",
+                        "Palau de la Música Catalana, Barcelona, Spain",
+                        "Parc de la Ciutadella, Barcelona, Spain",
+                    ],
+                    "walking",
+                )
+            ]
+        elif title == "Casa Milà + Casa Batlló + Park Güell":
+            day["route_links"] = [
+                build_route_link(
+                    "Hotel to Gaudi route",
+                    [
+                        BARCELONA_HOTEL_QUERY,
+                        "Casa Milà / La Pedrera, Barcelona, Spain",
+                        "Casa Batlló, Barcelona, Spain",
+                        "Park Güell, Barcelona, Spain",
+                        "Gràcia, Barcelona, Spain",
+                    ],
+                    "walking",
+                )
+            ]
+        elif title == "MNAC + Sagrada Família + Sant Pau area":
+            day["route_links"] = [
+                build_route_link(
+                    "Hotel to MNAC and Sagrada Familia",
+                    [
+                        BARCELONA_HOTEL_QUERY,
+                        "MNAC, Barcelona, Spain",
+                        "Sagrada Família, Barcelona, Spain",
+                        "Sant Pau Art Nouveau Site, Barcelona, Spain",
+                    ],
+                    "transit",
+                )
+            ]
+        elif title == "Full-day Tossa de Mar":
+            day["route_links"] = [
+                build_route_link("Hotel to Tossa de Mar", [BARCELONA_HOTEL_QUERY, "Tossa de Mar, Girona, Spain"], "driving"),
+                build_route_link("Tossa de Mar back to hotel", ["Tossa de Mar, Girona, Spain", BARCELONA_HOTEL_QUERY], "driving"),
+                build_route_link(
+                    "Tossa de Mar local route",
+                    [
+                        "Tossa de Mar, Girona, Spain",
+                        "Vila Vella, Tossa de Mar, Girona, Spain",
+                        "Platja Gran, Tossa de Mar, Girona, Spain",
+                        "Es Codolar, Tossa de Mar, Girona, Spain",
+                    ],
+                    "walking",
+                ),
+            ]
+        elif title == "Arrive Granada + Cathedral area + Albaicín sunset":
+            first_stop = first(day.get("stops", []))
+            if first_stop:
+                first_stop["links"] = [
+                    build_route_link("Hotel to BCN airport", [BARCELONA_HOTEL_QUERY, BARCELONA_AIRPORT_QUERY], "driving"),
+                    build_route_link(
+                        "Barcelona airport to Granada airport",
+                        [BARCELONA_AIRPORT_QUERY, "Federico Garcia Lorca Granada-Jaen Airport, Granada, Spain"],
+                        "driving",
+                    ),
+                ]
 
 
 def destination_referenced(item: dict[str, Any], days: list[dict[str, Any]]) -> bool:
@@ -1807,18 +1925,26 @@ def build_map_links(queries: list[str], multi_label: str, single_label: str) -> 
     return []
 
 
+def build_route_link(label: str, queries: list[str], travelmode: str = "walking") -> dict[str, str]:
+    return {
+        "label": label,
+        "href": build_google_maps_directions_url(queries, travelmode),
+        "apple_href": build_apple_maps_directions_url(queries, travelmode),
+    }
+
+
 def build_google_maps_search_url(query: str) -> str:
     return f"https://www.google.com/maps/search/?api=1&query={quote_plus(query)}"
 
 
-def build_google_maps_directions_url(queries: list[str]) -> str:
+def build_google_maps_directions_url(queries: list[str], travelmode: str = "walking") -> str:
     route_points = queries[:9]
     if len(route_points) < 2:
         return build_google_maps_search_url(route_points[0]) if route_points else ""
 
     origin = quote_plus(route_points[0])
     destination = quote_plus(route_points[-1])
-    url = f"https://www.google.com/maps/dir/?api=1&travelmode=walking&origin={origin}&destination={destination}"
+    url = f"https://www.google.com/maps/dir/?api=1&travelmode={quote_plus(travelmode)}&origin={origin}&destination={destination}"
     if len(route_points) > 2:
         # Use an encoded separator so Safari on iPhone treats the full waypoint list as one query value.
         waypoints = "%7C".join(quote_plus(point) for point in route_points[1:-1])
@@ -1830,14 +1956,15 @@ def build_apple_maps_search_url(query: str) -> str:
     return f"https://maps.apple.com/?q={quote_plus(query)}"
 
 
-def build_apple_maps_directions_url(queries: list[str]) -> str:
+def build_apple_maps_directions_url(queries: list[str], travelmode: str = "walking") -> str:
     route_points = queries[:9]
     if len(route_points) < 2:
         return build_apple_maps_search_url(route_points[0]) if route_points else ""
 
     origin = quote_plus(route_points[0])
     destination = quote_plus(route_points[-1])
-    return f"https://maps.apple.com/?saddr={origin}&daddr={destination}&dirflg=w"
+    dirflg = {"walking": "w", "driving": "d", "transit": "r"}.get(travelmode, "w")
+    return f"https://maps.apple.com/?saddr={origin}&daddr={destination}&dirflg={dirflg}"
 
 
 def render_rich_text(text: str, lookup: dict[str, str]) -> str:
@@ -1881,6 +2008,11 @@ def main() -> None:
 
     index_html = render_index(itineraries)
     (ROOT / "index.html").write_text(index_html, encoding="utf-8")
+
+    expected_outputs = {PAGES_DIR / f"{itinerary['slug']}.html" for itinerary in itineraries}
+    for stale_page in PAGES_DIR.glob("*.html"):
+        if stale_page not in expected_outputs:
+            stale_page.unlink()
 
     for itinerary in itineraries:
         output_path = PAGES_DIR / f"{itinerary['slug']}.html"
