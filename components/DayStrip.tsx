@@ -3,11 +3,12 @@
 import { useEffect, useRef } from "react";
 import type { Day } from "@/lib/types";
 import { isToday } from "@/lib/hooks/useToday";
+import type { SheetDetent } from "./TripView";
 
 type Props = {
   days: Day[];
   activeId: string;
-  visible: boolean;
+  detent: SheetDetent;
   onSelect: (id: string) => void;
 };
 
@@ -17,8 +18,9 @@ function dayNumber(day: Day): string {
   return m ? m[1] : day.shortDate;
 }
 
-export function DayStrip({ days, activeId, visible, onSelect }: Props) {
+export function DayStrip({ days, activeId, detent, onSelect }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const visible = detent === "closed";
 
   useEffect(() => {
     if (!ref.current) return;
@@ -39,7 +41,7 @@ export function DayStrip({ days, activeId, visible, onSelect }: Props) {
     >
       <div
         ref={ref}
-        className={`mx-auto flex max-w-screen-md items-center gap-2 overflow-x-auto px-4 py-3 ${
+        className={`mx-auto max-w-screen-md overflow-x-auto px-4 py-3 ${
           visible ? "pointer-events-auto" : ""
         }`}
         style={{
@@ -47,6 +49,7 @@ export function DayStrip({ days, activeId, visible, onSelect }: Props) {
           scrollbarWidth: "none",
         }}
       >
+        <div className="mx-auto flex w-fit items-center gap-2">
         {days.map((d) => {
           const active = d.id === activeId;
           const today = isToday(d);
@@ -57,7 +60,7 @@ export function DayStrip({ days, activeId, visible, onSelect }: Props) {
               onClick={() => onSelect(d.id)}
               aria-pressed={active}
               aria-label={`${d.shortDate} — ${d.title}`}
-              className={`chip-button shrink-0 ${active ? "chip-active" : "chip-inactive"}`}
+              className={`chip-button press shrink-0 ${active ? "chip-active" : "chip-inactive"}`}
             >
               <span className="font-display">{dayNumber(d)}</span>
               {today && (
@@ -71,6 +74,7 @@ export function DayStrip({ days, activeId, visible, onSelect }: Props) {
             </button>
           );
         })}
+        </div>
       </div>
     </div>
   );

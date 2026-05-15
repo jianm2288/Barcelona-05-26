@@ -3,6 +3,17 @@ export type RouteLink = {
   url: string;
 };
 
+export type DestinationCategory =
+  | "hotel"
+  | "restaurant"
+  | "bar"
+  | "museum"
+  | "park"
+  | "landmark"
+  | "transit"
+  | "shopping"
+  | "unknown";
+
 export type Destination = {
   id: string;
   region: string;
@@ -11,6 +22,7 @@ export type Destination = {
   link: string | null;
   lat: number;
   lng: number;
+  category: DestinationCategory;
 };
 
 export type TimelineItem = {
@@ -20,12 +32,27 @@ export type TimelineItem = {
   routes: RouteLink[];
 };
 
-export type DayStopMode = "walking" | "driving";
+export type DayStopMode =
+  | "walking"
+  | "driving"
+  | "transit"
+  | "flight"
+  | "train";
+
+// Describes the leg leading TO this stop (from the previous stop, or from the
+// day's hotel for the first stop). Only honored for `flight` / `train` modes;
+// `walking` / `driving` / `transit` always use Mapbox Directions at runtime.
+export type DayStopCommute = {
+  durationMin?: number;
+  distanceKm?: number;
+  note?: string;
+};
 
 export type DayStop = {
   destinationId: string;
   order: number;
   mode: DayStopMode;
+  commute?: DayStopCommute | null;
 };
 
 export type LineStringGeometry = {

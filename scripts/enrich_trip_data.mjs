@@ -100,6 +100,46 @@ async function directions(origin, dest, mode, cache) {
   return line;
 }
 
+// Heuristic category derivation from destination name + summary. First match wins.
+// Order matters — more specific keywords come before generic ones.
+const CATEGORY_RULES = [
+  ["hotel", /\b(hotel|hostal|airbnb|riad|inn|lodge|guesthouse|paradores?)\b/i],
+  [
+    "restaurant",
+    /\b(restaur|tapas|cocina|kitchen|asador|trattoria|paella|cafe|café|gastrobar|taberna|chiringuito|cal |can |casa fernando|mussol|braseria|menj|comer)\b/i,
+  ],
+  ["bar", /\b(bar |bodega|wine|vermut|coctel|cocktail|pub|rooftop|terrace)\b/i],
+  [
+    "museum",
+    /\b(museum|museo|gallery|gallería|fundació|fundación|sagrada|cathedral|catedral|basilica|basílica)\b/i,
+  ],
+  ["park", /\b(park|parc|güell|jardin|garden|monte|monastery|monasterio)\b/i],
+  [
+    "landmark",
+    /\b(alhambra|generalife|tower|torre|plaza|square|fountain|monument|mirador|viewpoint|alcazar|alcázar)\b/i,
+  ],
+  [
+    "transit",
+    /\b(station|airport|aeropuerto|estación|train|metro|bus terminal|renfe|ave)\b/i,
+  ],
+  ["shopping", /\b(market|mercado|store|shop|el corte|boqueria|boutique)\b/i],
+];
+
+function categorize(dest) {
+  // Match the destination NAME first — summaries often mention nearby places
+  // (e.g. "near the hotel") which create false positives.
+  for (const [cat, re] of CATEGORY_RULES) {
+    if (re.test(dest.name)) return cat;
+  }
+  // Fall back to summary only for category words unlikely to be relational.
+  // (We exclude 'hotel' / 'restaurant' here — those are too easily misused.)
+  for (const [cat, re] of CATEGORY_RULES) {
+    if (cat === "hotel" || cat === "restaurant" || cat === "bar") continue;
+    if (re.test(dest.summary || "")) return cat;
+  }
+  return "unknown";
+}
+
 function parseStops(timeline) {
   // Pull every [name](#destination-id) link in body order, dedupe preserving
   // first occurrence — pin order follows when the author first mentioned it.
@@ -147,6 +187,8 @@ async function enrichTrip(filePath, seed, cache) {
         console.log(`  geo ${dest.id} → ${dest.lng}, ${dest.lat}`);
       }
     }
+    // Always (re)categorize — cheap, deterministic, no API needed.
+    dest.category = categorize(dest);
     byId.set(dest.id, dest);
   }
   stamps[trip.slug] = tripStamps;

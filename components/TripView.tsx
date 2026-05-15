@@ -9,6 +9,8 @@ import { MapCanvas } from "./MapCanvas";
 import { DayStrip } from "./DayStrip";
 import { TripSheet } from "./TripSheet";
 
+export type SheetDetent = "closed" | "medium" | "expanded";
+
 type Props = {
   trip: Trip;
   mapboxToken: string;
@@ -18,7 +20,7 @@ export function TripView({ trip, mapboxToken }: Props) {
   const { initialDayId } = useToday(trip.days);
   const [activeDayId, setActiveDayId] = useState(initialDayId);
   const [selectedStopId, setSelectedStopId] = useState<string | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(true);
+  const [detent, setDetent] = useState<SheetDetent>("medium");
   const [sheetHeightPx, setSheetHeightPx] = useState(0);
   const geo = useGeolocation(true);
 
@@ -35,7 +37,7 @@ export function TripView({ trip, mapboxToken }: Props) {
   const handleSelectDay = (id: string) => {
     setActiveDayId(id);
     setSelectedStopId(null);
-    setSheetOpen(true);
+    if (detent === "closed") setDetent("medium");
   };
 
   const handlePrev = () => {
@@ -46,9 +48,14 @@ export function TripView({ trip, mapboxToken }: Props) {
       handleSelectDay(trip.days[dayIndex + 1].id);
   };
 
+  // Pin tap: toggle selection if same pin tapped twice; otherwise select.
   const handlePinTap = (id: string) => {
+    if (id === selectedStopId) {
+      setSelectedStopId(null);
+      return;
+    }
     setSelectedStopId(id);
-    setSheetOpen(true);
+    if (detent === "closed") setDetent("medium");
   };
 
   const handleMapTap = () => {
@@ -63,7 +70,7 @@ export function TripView({ trip, mapboxToken }: Props) {
         destinations={trip.destinations}
         selectedStopId={selectedStopId}
         geo={geo}
-        sheetOpen={sheetOpen}
+        sheetOpen={detent !== "closed"}
         sheetHeightPx={sheetHeightPx}
         onPinTap={handlePinTap}
         onMapTap={handleMapTap}
@@ -72,19 +79,18 @@ export function TripView({ trip, mapboxToken }: Props) {
       <DayStrip
         days={trip.days}
         activeId={day.id}
-        visible={!sheetOpen}
+        detent={detent}
         onSelect={handleSelectDay}
       />
 
       <TripSheet
-        tripTitle={trip.hero?.title || ""}
         day={day}
         destinations={trip.destinations}
         selectedStopId={selectedStopId}
-        open={sheetOpen}
+        detent={detent}
+        onDetentChange={setDetent}
         onPrevDay={handlePrev}
         onNextDay={handleNext}
-        onToggle={() => setSheetOpen((o) => !o)}
         onStopTap={handlePinTap}
         onClearStop={() => setSelectedStopId(null)}
         hasPrev={dayIndex > 0}

@@ -12,6 +12,8 @@
     "predev": "node scripts/sync_public.mjs"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "agentation": "^3.0.2",
     "mapbox-gl": "^3.8.0",
     "next": "14.2.35",
     "react": "18.3.1",

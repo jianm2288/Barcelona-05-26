@@ -4,7 +4,9 @@
 
 :root {
   color-scheme: light;
-  --sheet-open-height: 60vh;
+  --sheet-half-height: 45vh;
+  --sheet-tall-height: 88vh;
+  --sheet-closed-peek: 64px;
 }
 
 html,
@@ -60,12 +62,15 @@ main {
   }
 
   .pin-badge {
-    @apply press relative inline-flex h-9 w-9 items-center justify-center rounded-full text-pin font-display;
+    @apply relative inline-flex h-9 w-9 items-center justify-center rounded-full text-pin font-display;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      color 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .pin-badge-inactive {
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.92);
     color: #1d1d1f;
     -webkit-backdrop-filter: saturate(180%) blur(16px);
     backdrop-filter: saturate(180%) blur(16px);
@@ -74,10 +79,14 @@ main {
   }
 
   .pin-badge-active {
-    background-color: rgba(0, 102, 204, 0.95);
+    background-color: rgba(0, 102, 204, 0.98);
     color: #fff;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5),
-      0 4px 14px rgba(0, 102, 204, 0.45);
+      0 2px 8px rgba(0, 0, 0, 0.22);
+  }
+
+  .pin-badge-dim {
+    opacity: 0.6;
   }
 
   .chip-button {
@@ -115,4 +124,230 @@ main {
 }
 .mapboxgl-canvas {
   outline: none;
+}
+
+/* Progressive blur stack: a slim band at the top of the sheet scroll viewport.
+   Layers ramp from strong blur (top edge) to clear (bottom edge), so content
+   only feels the effect as it scrolls up under the band. Title text should
+   sit below this band at rest (via top-padding on the scroll content). */
+.progressive-blur {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 56px;
+  pointer-events: none;
+  z-index: 5;
+}
+.progressive-blur > div {
+  position: absolute;
+  inset: 0;
+}
+.progressive-blur > div:nth-child(1) {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 30%);
+  mask-image: linear-gradient(to bottom, black 0%, transparent 30%);
+}
+.progressive-blur > div:nth-child(2) {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 25%,
+    transparent 60%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 25%,
+    transparent 60%
+  );
+}
+.progressive-blur > div:nth-child(3) {
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 30%,
+    black 60%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 30%,
+    black 60%,
+    transparent 100%
+  );
+}
+.progressive-blur > div:nth-child(4),
+.progressive-blur > div:nth-child(5) {
+  display: none;
+}
+
+/* Photo album gallery: square polaroid-ish cards with overlap + rotation. */
+.album-card {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 4px 4px 12px 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  overflow: visible;
+  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.album-card.album-photo > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.album-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  border: 1.5px dashed #c4c4c4;
+  padding: 0;
+  color: #999999;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  z-index: 50;
+  cursor: pointer;
+}
+.album-add:hover {
+  color: #666666;
+  border-color: #9a9a9a;
+}
+.album-card.album-photo:hover {
+  transform: rotate(0deg) translateX(0) scale(1.04) !important;
+  z-index: 100 !important;
+}
+.album-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 150ms;
+  cursor: pointer;
+  z-index: 200;
+}
+.album-card.album-photo:hover .album-remove {
+  opacity: 1;
+}
+
+/* Commute legs: dotted connector with a centered pill between stop cards. */
+.commute-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 4px 0;
+}
+.commute-row::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px dotted rgba(29, 29, 31, 0.18);
+  z-index: 0;
+}
+.commute-pill {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: rgba(29, 29, 31, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(29, 29, 31, 0.08);
+}
+.commute-pill-link {
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.commute-pill-link:hover {
+  background: #ffffff;
+  color: #1d1d1f;
+}
+.commute-pill-part::before {
+  content: "·";
+  margin: 0 4px;
+  color: rgba(29, 29, 31, 0.32);
+}
+.commute-pill-part:first-of-type::before {
+  content: none;
+  margin: 0;
+}
+.commute-pill-skeleton {
+  width: 110px;
+  height: 22px;
+  background: rgba(29, 29, 31, 0.08);
+  box-shadow: none;
+  animation: commute-skeleton-pulse 1.2s ease-in-out infinite;
+}
+@keyframes commute-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Geolocation puck: outer pulse ring + inner solid dot. */
+@keyframes geo-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.geo-puck {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+.geo-puck-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background-color: rgba(0, 102, 204, 0.35);
+  animation: geo-pulse 2.2s ease-out infinite;
+}
+.geo-puck-dot {
+  position: absolute;
+  inset: 6px;
+  border-radius: 9999px;
+  background-color: #0066cc;
+  box-shadow: 0 0 0 2px #fff, 0 1px 3px rgba(0, 0, 0, 0.25);
 }

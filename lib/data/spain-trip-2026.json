@@ -36,7 +36,8 @@
       "summary": "Barcelona hotel base on Pau Claris in Eixample, still walkable to the Gothic Quarter and especially convenient for Passeig de Gracia, Casa Batllo, and Casa Mila.",
       "link": "https://www.google.com/maps/search/?api=1&query=Renaissance+Barcelona+Hotel%2C+Pau+Claris+122%2C+Barcelona%2C+Spain",
       "lng": 2.1635,
-      "lat": 41.3947
+      "lat": 41.3947,
+      "category": "hotel"
     },
     {
       "id": "destination-barcelona-el-prat-airport",
@@ -45,7 +46,8 @@
       "summary": "Barcelona airport anchor for the arrival transfer to the Renaissance and the May 21 flight to Granada.",
       "link": "https://www.google.com/maps/search/?api=1&query=Josep+Tarradellas+Barcelona-El+Prat+Airport%2C+Barcelona%2C+Spain",
       "lng": 2.0833,
-      "lat": 41.2974
+      "lat": 41.2974,
+      "category": "transit"
     },
     {
       "id": "destination-gothic-quarter",
@@ -54,7 +56,8 @@
       "summary": "Arrival-night historic core walk that keeps the first Barcelona evening compact and scenic.",
       "link": "https://www.barcelonaturisme.com/wv3/en/page/1052/gothic-quarter.html",
       "lng": 2.1769,
-      "lat": 41.3826
+      "lat": 41.3826,
+      "category": "unknown"
     },
     {
       "id": "destination-barcelona-cathedral",
@@ -63,7 +66,8 @@
       "summary": "Quick first-evening anchor near the hotel before dinner in the old city.",
       "link": "https://catedralbcn.org/en/tourist-visit/visiting-hours/",
       "lng": 2.1761,
-      "lat": 41.3839
+      "lat": 41.3839,
+      "category": "museum"
     },
     {
       "id": "destination-picasso-museum-barcelona",
@@ -72,7 +76,8 @@
       "summary": "Strong Sunday museum anchor before the El Born and Palau de la Música stretch.",
       "link": "https://museupicassobcn.cat/en",
       "lng": 2.181,
-      "lat": 41.3851
+      "lat": 41.3851,
+      "category": "museum"
     },
     {
       "id": "destination-el-born",
@@ -81,7 +86,8 @@
       "summary": "Walkable neighborhood for museum, church, lunch, and dinner stops on the Sunday plan.",
       "link": "https://www.barcelonabusturistic.cat/en/el-born",
       "lng": 2.1839,
-      "lat": 41.3848
+      "lat": 41.3848,
+      "category": "museum"
     },
     {
       "id": "destination-santa-maria-del-mar",
@@ -90,7 +96,8 @@
       "summary": "Historic church and easy landmark within the El Born walking segment.",
       "link": "https://www.google.com/maps/search/Santa+Maria+del+Mar+Barcelona/",
       "lng": 2.1827,
-      "lat": 41.3835
+      "lat": 41.3835,
+      "category": "unknown"
     },
     {
       "id": "destination-palau-de-la-m-sica-catalana",
@@ -99,7 +106,8 @@
       "summary": "Afternoon architectural highlight on the Barcelona Sunday route.",
       "link": "https://www.palaumusica.cat/en/visites",
       "lng": 2.175,
-      "lat": 41.3878
+      "lat": 41.3878,
+      "category": "unknown"
     },
     {
       "id": "destination-arc-de-triomf",
@@ -108,7 +116,8 @@
       "summary": "Optional add-on after the Palau visit before returning toward dinner.",
       "link": "https://www.google.com/maps/search/Arc+de+Triomf+Barcelona/",
       "lng": 2.1808,
-      "lat": 41.3911
+      "lat": 41.3911,
+      "category": "unknown"
     },
     {
       "id": "destination-parc-de-la-ciutadella",
@@ -117,7 +126,8 @@
       "summary": "Optional green-space extension after Palau de la Música and Arc de Triomf.",
       "link": "https://www.google.com/maps/search/Parc+de+la+Ciutadella+Barcelona/",
       "lng": 2.1864,
-      "lat": 41.3883
+      "lat": 41.3883,
+      "category": "park"
     },
     {
       "id": "destination-casa-mil-la-pedrera",
@@ -126,7 +136,8 @@
       "summary": "First Gaudí-house anchor on the Monday architecture day.",
       "link": "https://www.lapedrera.com/en/",
       "lng": 2.1619,
-      "lat": 41.3953
+      "lat": 41.3953,
+      "category": "unknown"
     },
     {
       "id": "destination-casa-batll",
@@ -135,7 +146,8 @@
       "summary": "Second major Gaudí visit on the Monday architecture circuit.",
       "link": "https://www.casabatllo.es/en/visit/?utm_source=chatgpt.com",
       "lng": 2.165,
-      "lat": 41.3917
+      "lat": 41.3917,
+      "category": "unknown"
     },
     {
       "id": "destination-park-g-ell",
@@ -144,7 +156,8 @@
       "summary": "Afternoon park visit tied to the Gaudí-house day in the current source itinerary.",
       "link": "https://parkguell.barcelona/en/planning-your-visit/prices-and-times?utm_source=chatgpt.com",
       "lng": 2.1527,
-      "lat": 41.4145
+      "lat": 41.4145,
+      "category": "park"
     },
     {
       "id": "destination-gr-cia",
@@ -153,7 +166,8 @@
       "summary": "Late-afternoon cafe and dinner neighborhood after Park Güell.",
       "link": "https://www.google.com/maps/search/Gracia+Barcelona/",
       "lng": 2.1561,
-      "lat": 41.4034
+      "lat": 41.4034,
+      "category": "park"
     },
     {
       "id": "destination-mnac",
@@ -162,7 +176,8 @@
       "summary": "Tuesday museum stop placed before the fixed Sagrada Família entry.",
       "link": "https://www.museunacional.cat/en",
       "lng": 2.1535,
-      "lat": 41.3686
+      "lat": 41.3686,
+      "category": "museum"
     },
     {
       "id": "destination-sagrada-fam-lia",
@@ -171,7 +186,8 @@
       "summary": "Fixed timed entry at 1:30 PM on Tuesday, May 19, and one of the trip’s main anchors.",
       "link": "https://sagradafamilia.org/en",
       "lng": 2.1744,
-      "lat": 41.4036
+      "lat": 41.4036,
+      "category": "museum"
     },
     {
       "id": "destination-sant-pau-art-nouveau-site",
@@ -180,7 +196,8 @@
       "summary": "Late-afternoon follow-up near Sagrada Família on the Tuesday plan.",
       "link": "https://www.santpaubarcelona.org/en/",
       "lng": 2.1746,
-      "lat": 41.4117
+      "lat": 41.4117,
+      "category": "museum"
     },
     {
       "id": "destination-tossa-de-mar",
@@ -189,7 +206,8 @@
       "summary": "Full-day coastal excursion replacing the earlier Blanes or Sitges idea in this updated itinerary.",
       "link": "https://www.google.com/maps/search/Tossa+de+Mar/",
       "lng": 2.932,
-      "lat": 41.7202
+      "lat": 41.7202,
+      "category": "unknown"
     },
     {
       "id": "destination-vila-vella",
@@ -198,7 +216,8 @@
       "summary": "The walled old town and viewpoints that define the Tossa de Mar day trip.",
       "link": "https://www.google.com/maps/search/Vila+Vella+Tossa+de+Mar/",
       "lng": 2.9333,
-      "lat": 41.7194
+      "lat": 41.7194,
+      "category": "unknown"
     },
     {
       "id": "destination-platja-gran",
@@ -207,7 +226,8 @@
       "summary": "Main beach option during the open afternoon in Tossa de Mar.",
       "link": "https://www.google.com/maps/search/Platja+Gran+Tossa+de+Mar/",
       "lng": 2.9329,
-      "lat": 41.7203
+      "lat": 41.7203,
+      "category": "unknown"
     },
     {
       "id": "destination-es-codolar",
@@ -216,7 +236,8 @@
       "summary": "Smaller cove option on the Tossa afternoon beach-and-viewpoint loop.",
       "link": "https://www.google.com/maps/search/Es+Codolar+Tossa+de+Mar/",
       "lng": 2.9341,
-      "lat": 41.7184
+      "lat": 41.7184,
+      "category": "landmark"
     },
     {
       "id": "destination-granada-cathedral",
@@ -225,7 +246,8 @@
       "summary": "Easy first-evening or next-morning anchor near the Granada hotel.",
       "link": "https://catedraldegranada.com/",
       "lng": -3.5984,
-      "lat": 37.1764
+      "lat": 37.1764,
+      "category": "museum"
     },
     {
       "id": "destination-royal-chapel",
@@ -234,7 +256,8 @@
       "summary": "Compact historical stop paired naturally with the cathedral in central Granada.",
       "link": "https://capillarealgranada.com/",
       "lng": -3.5984,
-      "lat": 37.1762
+      "lat": 37.1762,
+      "category": "museum"
     },
     {
       "id": "destination-alcaicer-a",
@@ -243,7 +266,8 @@
       "summary": "Historic market area that fits neatly into the first Granada evening and final Granada morning.",
       "link": "https://www.google.com/maps/search/Alcaiceria+Granada/",
       "lng": -3.5985,
-      "lat": 37.1758
+      "lat": 37.1758,
+      "category": "shopping"
     },
     {
       "id": "destination-plaza-bib-rambla",
@@ -252,7 +276,8 @@
       "summary": "Central square attached to the late-afternoon Granada orientation walk.",
       "link": "https://www.google.com/maps/search/Plaza+Bib-Rambla+Granada/",
       "lng": -3.5995,
-      "lat": 37.1761
+      "lat": 37.1761,
+      "category": "landmark"
     },
     {
       "id": "destination-albaic-n",
@@ -261,7 +286,8 @@
       "summary": "Hilltop quarter for sunset views, first-night dinner, and the most atmospheric Granada walking stretch.",
       "link": "https://www.google.com/maps/search/Albaicin+Granada/",
       "lng": -3.5919,
-      "lat": 37.1799
+      "lat": 37.1799,
+      "category": "unknown"
     },
     {
       "id": "destination-mirador-de-san-nicol-s",
@@ -270,7 +296,8 @@
       "summary": "Classic sunset lookout over the Alhambra and one of the defining Granada moments.",
       "link": "https://www.google.com/maps/search/Mirador+de+San+Nicolas+Granada/",
       "lng": -3.5918,
-      "lat": 37.181
+      "lat": 37.181,
+      "category": "landmark"
     },
     {
       "id": "destination-alhambra",
@@ -279,7 +306,8 @@
       "summary": "Highest-priority Granada booking, around which the full Friday visit should be built.",
       "link": "https://www.alhambra-patronato.es/en",
       "lng": -3.5879,
-      "lat": 37.1773
+      "lat": 37.1773,
+      "category": "landmark"
     },
     {
       "id": "destination-generalife",
@@ -288,7 +316,8 @@
       "summary": "Gardens-and-palaces follow-up within the Alhambra complex.",
       "link": "https://www.alhambra-patronato.es/en/the-monument/generalife",
       "lng": -3.5856,
-      "lat": 37.1789
+      "lat": 37.1789,
+      "category": "landmark"
     },
     {
       "id": "destination-nasrid-palaces",
@@ -297,7 +326,8 @@
       "summary": "Timed-entry centerpiece within the Alhambra visit and the critical scheduling constraint for the day.",
       "link": "https://www.alhambra-patronato.es/en/areas/nasrid-palaces",
       "lng": -3.5887,
-      "lat": 37.1775
+      "lat": 37.1775,
+      "category": "landmark"
     },
     {
       "id": "destination-monasterio-de-san-jer-nimo",
@@ -306,7 +336,8 @@
       "summary": "Optional extra site on the final Granada morning if the city-center list is already covered.",
       "link": "https://www.google.com/maps/search/Monasterio+de+San+Jeronimo+Granada/",
       "lng": -3.6019,
-      "lat": 37.1804
+      "lat": 37.1804,
+      "category": "park"
     },
     {
       "id": "destination-real-alc-zar-of-seville",
@@ -315,7 +346,8 @@
       "summary": "Top-priority Seville monument and the main Sunday morning booking anchor.",
       "link": "https://www.alcazarsevilla.org/en/",
       "lng": -5.9911,
-      "lat": 37.3837
+      "lat": 37.3837,
+      "category": "landmark"
     },
     {
       "id": "destination-santa-cruz",
@@ -324,7 +356,8 @@
       "summary": "Most walkable district in the monument core, connecting the Alcázar, Cathedral, lunch, and evening routes.",
       "link": "https://www.google.com/maps/search/Barrio+de+Santa+Cruz+Seville/",
       "lng": -5.9905,
-      "lat": 37.385
+      "lat": 37.385,
+      "category": "museum"
     },
     {
       "id": "destination-patio-de-banderas",
@@ -333,7 +366,8 @@
       "summary": "Key stop within the Santa Cruz walking segment after the Alcázar.",
       "link": "https://www.google.com/maps/search/Patio+de+Banderas+Seville/",
       "lng": -5.9912,
-      "lat": 37.3838
+      "lat": 37.3838,
+      "category": "landmark"
     },
     {
       "id": "destination-murillo-gardens",
@@ -342,7 +376,8 @@
       "summary": "Shaded extension within the Santa Cruz afternoon route.",
       "link": "https://www.google.com/maps/search/Murillo+Gardens+Seville/",
       "lng": -5.989,
-      "lat": 37.3829
+      "lat": 37.3829,
+      "category": "unknown"
     },
     {
       "id": "destination-seville-cathedral",
@@ -351,7 +386,8 @@
       "summary": "Sunday afternoon monument stop once the cultural-visit timing opens up.",
       "link": "https://www.catedraldesevilla.es/en/",
       "lng": -5.993,
-      "lat": 37.3859
+      "lat": 37.3859,
+      "category": "museum"
     },
     {
       "id": "destination-giralda",
@@ -360,7 +396,8 @@
       "summary": "Bell-tower climb paired with the Cathedral on the Sunday sightseeing route.",
       "link": "https://www.google.com/maps/search/Giralda+Seville/",
       "lng": -5.9923,
-      "lat": 37.3863
+      "lat": 37.3863,
+      "category": "museum"
     },
     {
       "id": "destination-las-setas-metropol-parasol",
@@ -369,7 +406,8 @@
       "summary": "Sunset and dinner district for the first full Seville evening.",
       "link": "https://www.google.com/maps/search/Metropol+Parasol+Seville/",
       "lng": -5.9923,
-      "lat": 37.3938
+      "lat": 37.3938,
+      "category": "unknown"
     },
     {
       "id": "destination-plaza-de-espa-a",
@@ -378,7 +416,8 @@
       "summary": "Open-air Monday morning anchor before the park, palace, or Triana options.",
       "link": "https://www.google.com/maps/search/Plaza+de+Espana+Seville/",
       "lng": -5.9869,
-      "lat": 37.3772
+      "lat": 37.3772,
+      "category": "landmark"
     },
     {
       "id": "destination-parque-de-mar-a-luisa",
@@ -387,7 +426,8 @@
       "summary": "Cooler park follow-up to Plaza de España on the open-air Seville day.",
       "link": "https://www.google.com/maps/search/Parque+de+Maria+Luisa+Seville/",
       "lng": -5.9869,
-      "lat": 37.3754
+      "lat": 37.3754,
+      "category": "park"
     },
     {
       "id": "destination-palacio-de-las-due-as",
@@ -396,7 +436,8 @@
       "summary": "Preferred Monday palace option when the afternoon leans architectural rather than riverfront.",
       "link": "https://www.lasduenas.es/en/",
       "lng": -5.9892,
-      "lat": 37.3939
+      "lat": 37.3939,
+      "category": "unknown"
     },
     {
       "id": "destination-triana",
@@ -405,7 +446,8 @@
       "summary": "Riverfront neighborhood for ceramics, tapas, and flamenco on the final full day.",
       "link": "https://www.google.com/maps/search/Triana+Seville/",
       "lng": -6.0029,
-      "lat": 37.3825
+      "lat": 37.3825,
+      "category": "unknown"
     },
     {
       "id": "destination-archivo-de-indias",
@@ -414,7 +456,8 @@
       "summary": "Easy final-morning exterior stop near the cathedral before heading to the airport.",
       "link": "https://www.google.com/maps/search/Archivo+de+Indias+Seville/",
       "lng": -5.993,
-      "lat": 37.385
+      "lat": 37.385,
+      "category": "museum"
     },
     {
       "id": "destination-hospital-de-los-venerables",
@@ -423,7 +466,8 @@
       "summary": "Optional last cultural stop if there is enough time on the final Seville morning.",
       "link": "https://www.google.com/maps/search/Hospital+de+los+Venerables+Seville/",
       "lng": -5.9905,
-      "lat": 37.3851
+      "lat": 37.3851,
+      "category": "unknown"
     }
   ],
   "days": [
@@ -18058,7 +18102,11 @@
         {
           "destinationId": "destination-granada-cathedral",
           "order": 3,
-          "mode": "driving"
+          "mode": "flight",
+          "commute": {
+            "durationMin": 85,
+            "note": "BCN → GRX"
+          }
         },
         {
           "destinationId": "destination-royal-chapel",

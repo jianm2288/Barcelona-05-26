@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import type { Destination } from "@/lib/types";
 import { loadPoi, type PoiData } from "@/lib/mapbox/poi";
+import { PhotoGallery } from "./PhotoGallery";
+import { PlacePhotos } from "./PlacePhotos";
 
 type Props = {
   destination: Destination;
@@ -29,18 +31,8 @@ export function StopDetail({ destination, onBack }: Props) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="px-5 pb-3 pt-1">
-        <button
-          type="button"
-          onClick={onBack}
-          aria-label="Back to day overview"
-          className="press inline-flex items-center gap-1 text-caption-strong text-action"
-        >
-          <span aria-hidden>‹</span> Back
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-5 pb-24">
+      <div className="flex-1 overflow-y-auto px-5 pb-24 pt-14">
+        <PlacePhotos name={destination.name} region={destination.region} />
         <h2 className="text-display-md font-display text-ink">
           {destination.name}
         </h2>
@@ -54,20 +46,20 @@ export function StopDetail({ destination, onBack }: Props) {
           <PoiRow label="Hours" value={poi?.hours ?? null} loading={loading} />
           <PoiRow label="Phone" value={poi?.phone ?? null} loading={loading} />
         </dl>
+
+        <PhotoGallery destinationId={destination.id} />
       </div>
 
-      {destination.link && (
-        <div className="border-t border-white/40 bg-white/60 px-5 py-3 backdrop-blur-xl">
-          <a
-            href={destination.link}
-            target="_blank"
-            rel="noreferrer"
-            className="press inline-flex w-full items-center justify-center rounded-pill bg-action px-4 py-3 text-body-strong text-white"
-          >
-            Open in Google Maps
-          </a>
-        </div>
-      )}
+      <div className="border-t border-white/40 bg-white/60 px-5 py-3 backdrop-blur-xl">
+        <a
+          href={`https://www.google.com/maps/dir/?api=1&destination=${destination.lat},${destination.lng}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="press inline-flex w-full items-center justify-center rounded-pill bg-action px-4 py-3 text-body-strong text-white"
+        >
+          Get directions in Google Maps
+        </a>
+      </div>
     </div>
   );
 }

@@ -1,23 +1,49 @@
 "use client";
 
-import type { Day, Destination } from "@/lib/types";
+import { Fragment } from "react";
+import {
+  Bed,
+  ForkKnife,
+  Martini,
+  Bank,
+  Tree,
+  MapPin,
+  Train,
+  Storefront,
+  SealCheck,
+  type Icon,
+} from "@phosphor-icons/react";
+import type { Day, Destination, DestinationCategory } from "@/lib/types";
+import { useCommutes } from "@/lib/hooks/useCommutes";
+import { CommutePill } from "./CommutePill";
+import { DayPhotos } from "./DayPhotos";
+
+const CATEGORY_ICONS: Record<DestinationCategory, Icon> = {
+  hotel: Bed,
+  restaurant: ForkKnife,
+  bar: Martini,
+  museum: Bank,
+  park: Tree,
+  landmark: SealCheck,
+  transit: Train,
+  shopping: Storefront,
+  unknown: MapPin,
+};
 
 type Props = {
-  tripTitle: string;
   day: Day;
   destinations: Destination[];
   onStopTap: (destinationId: string) => void;
 };
 
-export function DayOverview({ tripTitle, day, destinations, onStopTap }: Props) {
+export function DayOverview({ day, destinations, onStopTap }: Props) {
   const byId = new Map(destinations.map((d) => [d.id, d]));
+  const { legs } = useCommutes(day, destinations);
 
   return (
-    <div className="px-5 pb-10 pt-2">
-      <p className="text-caption-strong uppercase tracking-[0.12em] text-ink-48">
-        {tripTitle}
-      </p>
-      <h2 className="mt-2 text-display-md font-display text-ink">
+    <div className="px-5 pb-10 pt-14">
+      <DayPhotos day={day} destinations={destinations} />
+      <h2 className="text-display-md font-display text-ink">
         {day.heading}
       </h2>
       <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -35,33 +61,46 @@ export function DayOverview({ tripTitle, day, destinations, onStopTap }: Props) 
         </p>
       )}
 
-      <ul className="mt-5 flex flex-col gap-2">
+      <ul className="mt-5 flex flex-col">
         {day.stops.map((stop) => {
           const dest = byId.get(stop.destinationId);
           if (!dest) return null;
+          const Icon = CATEGORY_ICONS[dest.category] ?? MapPin;
+          const leg = legs[stop.destinationId] ?? {
+            state: "loading" as const,
+            mode: stop.mode,
+          };
           return (
-            <li key={stop.destinationId}>
-              <button
-                type="button"
-                onClick={() => onStopTap(stop.destinationId)}
-                className="press flex w-full items-start gap-3 rounded-md bg-white/70 p-3 text-left ring-1 ring-white/60 hover:bg-white"
-              >
-                <span className="pin-badge pin-badge-inactive mt-0.5">
-                  {stop.order}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-body-strong text-ink">
-                    {dest.name}
+            <Fragment key={stop.destinationId}>
+              <li>
+                <CommutePill leg={leg} />
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onStopTap(stop.destinationId)}
+                  className="press flex w-full items-start gap-3 rounded-md bg-white/70 p-3 text-left ring-1 ring-white/60 hover:bg-white"
+                >
+                  <span className="pin-badge pin-badge-inactive mt-0.5 shrink-0">
+                    {stop.order}
                   </span>
-                  <span className="block text-caption text-ink-48">
-                    {dest.region} · {stop.mode}
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-1.5">
+                      <Icon size={16} weight="duotone" />
+                      <span className="text-body-strong text-ink">
+                        {dest.name}
+                      </span>
+                    </span>
+                    <span className="block text-caption text-ink-48">
+                      {dest.region} · {stop.mode}
+                    </span>
+                    <span className="mt-1 block text-caption text-ink-80">
+                      {dest.summary}
+                    </span>
                   </span>
-                  <span className="mt-1 block text-caption text-ink-80">
-                    {dest.summary}
-                  </span>
-                </span>
-              </button>
-            </li>
+                </button>
+              </li>
+            </Fragment>
           );
         })}
       </ul>

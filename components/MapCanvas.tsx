@@ -45,6 +45,16 @@ export function MapCanvas({
   const mapRef = useRef<MapboxMap | null>(null);
   const pinMarkers = useRef<mapboxgl.Marker[]>([]);
   const geoMarker = useRef<mapboxgl.Marker | null>(null);
+  const lastAnimatedDayId = useRef<string | null>(null);
+  const routeAnimFrame = useRef<number | null>(null);
+  const flyToFitHandler = useRef<(() => void) | null>(null);
+  // Marker click handlers are attached once per day; we route them through a
+  // ref so the latest onPinTap closure (which sees current selectedStopId)
+  // is always invoked.
+  const onPinTapRef = useRef(onPinTap);
+  useEffect(() => {
+    onPinTapRef.current = onPinTap;
+  }, [onPinTap]);
 
   const stopsWithPoints = useMemo<StopWithPoint[]>(() => {
     const byId = new Map(destinations.map((d) => [d.id, d]));
@@ -116,7 +126,7 @@ export function MapCanvas({
         el.textContent = String(p.order);
         el.addEventListener("click", (e) => {
           e.stopPropagation();
-          onPinTap(p.id);
+          onPinTapRef.current(p.id);
         });
         const marker = new mapboxgl.Marker({ element: el, anchor: "center" })
           .setLngLat([p.lng, p.lat])
@@ -144,10 +154,10 @@ export function MapCanvas({
           source: ROUTE_SRC,
           layout: { "line-cap": "round", "line-join": "round" },
           paint: {
-            "line-color": "#000",
-            "line-width": 6,
-            "line-opacity": 0.12,
-            "line-blur": 4,
+            "line-color": "#0066CC",
+            "line-width": 8,
+            "line-opacity": 0.18,
+            "line-blur": 6,
           },
         });
         map.addLayer({
@@ -156,13 +166,13 @@ export function MapCanvas({
           source: ROUTE_SRC,
           layout: { "line-cap": "round", "line-join": "round" },
           paint: {
-            "line-color": "#ffffff",
-            "line-width": 3.5,
+            "line-color": "#0066CC",
+            "line-width": 4,
           },
         });
       }
 
-      // fit bounds
+      // fit bounds — Apple Maps style arc-out then tighten
       if (stopsWithPoints.length === 0) return;
       if (stopsWithPoints.length === 1) {
         map.flyTo({
@@ -175,19 +185,46 @@ export function MapCanvas({
       }
       const lngs = stopsWithPoints.map((s) => s.lng);
       const lats = stopsWithPoints.map((s) => s.lat);
+      const centroid: [number, number] = [
+        lngs.reduce((a, b) => a + b, 0) / lngs.length,
+        lats.reduce((a, b) => a + b, 0) / lats.length,
+      ];
       const bounds: LngLatBoundsLike = [
         [Math.min(...lngs), Math.min(...lats)],
         [Math.max(...lngs), Math.max(...lats)],
       ];
-      map.fitBounds(bounds, {
-        padding: {
-          top: 80,
-          left: 24,
-          right: 24,
-          bottom: sheetOpen ? sheetHeightPx + 24 : 80,
-        },
-        maxZoom: 15,
-        duration: 1200,
+      const tightenPadding = {
+        top: 80,
+        left: 24,
+        right: 24,
+        bottom: sheetOpen ? sheetHeightPx + 24 : 80,
+      };
+
+      // detach any prior pending fit handler so we don't stack
+      if (flyToFitHandler.current) {
+        map.off("moveend", flyToFitHandler.current);
+        flyToFitHandler.current = null;
+      }
+      const onArrive = () => {
+        if (flyToFitHandler.current) {
+          map.off("moveend", flyToFitHandler.current);
+          flyToFitHandler.current = null;
+        }
+        map.fitBounds(bounds, {
+          padding: tightenPadding,
+          maxZoom: 15,
+          duration: 700,
+          essential: true,
+        });
+      };
+      flyToFitHandler.current = onArrive;
+      map.once("moveend", onArrive);
+
+      map.flyTo({
+        center: centroid,
+        zoom: 12,
+        speed: 0.8,
+        curve: 1.6,
         essential: true,
       });
     };
@@ -221,7 +258,79 @@ export function MapCanvas({
     });
   }, [sheetOpen, sheetHeightPx, stopsWithPoints]);
 
-  // selected-pin styling
+  // route draw-on animation on day change
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (stopsWithPoints.length < 2) return;
+    if (lastAnimatedDayId.current === day.id) return;
+
+    const animate = () => {
+      if (!map.getLayer(ROUTE_LAYER)) return;
+      lastAnimatedDayId.current = day.id;
+      if (routeAnimFrame.current !== null) {
+        cancelAnimationFrame(routeAnimFrame.current);
+        routeAnimFrame.current = null;
+      }
+      const duration = 900;
+      const routeLengthRatio = 200;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const elapsed = now - start;
+        const t = Math.min(1, elapsed / duration);
+        const p = 1 - Math.pow(1 - t, 3);
+        const dashLen = p * routeLengthRatio;
+        const gapLen = routeLengthRatio - dashLen;
+        if (!map.getLayer(ROUTE_LAYER)) return;
+        map.setPaintProperty(ROUTE_LAYER, "line-dasharray", [dashLen, gapLen]);
+        if (t < 1) {
+          routeAnimFrame.current = requestAnimationFrame(tick);
+        } else {
+          map.setPaintProperty(ROUTE_LAYER, "line-dasharray", [1, 0]);
+          routeAnimFrame.current = null;
+        }
+      };
+      routeAnimFrame.current = requestAnimationFrame(tick);
+    };
+
+    if (map.isStyleLoaded() && map.getLayer(ROUTE_LAYER)) {
+      animate();
+    } else {
+      const onReady = () => {
+        if (map.getLayer(ROUTE_LAYER)) animate();
+      };
+      map.once("idle", onReady);
+    }
+
+    return () => {
+      if (routeAnimFrame.current !== null) {
+        cancelAnimationFrame(routeAnimFrame.current);
+        routeAnimFrame.current = null;
+      }
+    };
+  }, [day.id, stopsWithPoints]);
+
+  // recenter map on selected pin so it sits above the sheet
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (!selectedStopId) return;
+    const stop = stopsWithPoints.find((s) => s.id === selectedStopId);
+    if (!stop) return;
+    map.easeTo({
+      center: [stop.lng, stop.lat],
+      padding: {
+        bottom: sheetHeightPx,
+        top: 80,
+        left: 24,
+        right: 24,
+      },
+      duration: 600,
+      essential: true,
+    });
+  }, [selectedStopId, stopsWithPoints, sheetHeightPx]);
+
+  // selected-pin styling — class-only; Mapbox owns el.style.transform for positioning
   useEffect(() => {
     pinMarkers.current.forEach((marker) => {
       const el = marker.getElement();
@@ -230,9 +339,7 @@ export function MapCanvas({
       const isActive = id === selectedStopId;
       el.classList.toggle("pin-badge-active", isActive);
       el.classList.toggle("pin-badge-inactive", !isActive);
-      el.style.zIndex = isActive ? "10" : "1";
-      el.style.transform = `${isActive ? "scale(1.15)" : "scale(1)"}`;
-      el.style.transition = "transform 180ms cubic-bezier(0.4, 0, 0.2, 1)";
+      el.classList.toggle("pin-badge-dim", !!selectedStopId && !isActive);
     });
   }, [selectedStopId, day.id]);
 
@@ -247,12 +354,9 @@ export function MapCanvas({
     }
     if (!geoMarker.current) {
       const el = document.createElement("div");
-      el.style.width = "16px";
-      el.style.height = "16px";
-      el.style.borderRadius = "9999px";
-      el.style.background = "#0a84ff";
-      el.style.boxShadow =
-        "0 0 0 4px rgba(10,132,255,0.25), 0 0 0 2px #fff";
+      el.className = "geo-puck";
+      el.innerHTML =
+        '<span class="geo-puck-pulse"></span><span class="geo-puck-dot"></span>';
       geoMarker.current = new mapboxgl.Marker({ element: el }).setLngLat([
         geo.lng,
         geo.lat,
