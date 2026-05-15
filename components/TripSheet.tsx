@@ -26,14 +26,29 @@ const SHEET_HEIGHT: Record<Exclude<SheetDetent, "closed">, string> = {
   expanded: "95dvh",
 };
 
-function nextDetentForDrag(detent: SheetDetent, delta: number): SheetDetent {
-  const threshold = 72;
-  if (delta > threshold) {
-    return detent === "closed" ? "closed" : "closed";
+const DRAG_THRESHOLD = 72;
+// Pixels of finger travel on the content scroller before we decide whether the
+// gesture is a sheet drag or a content scroll.
+const SCROLL_INTERCEPT_THRESHOLD = 8;
+// When dismissing the expanded sheet by dragging it down, releasing with the
+// finger above this fraction of the viewport snaps to medium instead of
+// closed. Below it, the sheet dismisses.
+const MID_VS_DISMISS_RATIO = 0.3;
+
+function nextDetentForDrag(
+  detent: SheetDetent,
+  delta: number,
+  releaseY: number,
+): SheetDetent {
+  if (delta > DRAG_THRESHOLD) {
+    if (detent === "expanded") {
+      const cutoff = window.innerHeight * MID_VS_DISMISS_RATIO;
+      return releaseY < cutoff ? "medium" : "closed";
+    }
+    return "closed";
   }
-  if (delta < -threshold) {
+  if (delta < -DRAG_THRESHOLD) {
     if (detent === "closed") return "medium";
-    if (detent === "medium") return "expanded";
     return "expanded";
   }
   return detent;
@@ -54,6 +69,7 @@ export function TripSheet({
   onSheetHeightChange,
 }: Props) {
   const sheetRef = useRef<HTMLDivElement | null>(null);
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [drag, setDrag] = useState<{ startY: number; delta: number } | null>(
     null,
   );
@@ -98,10 +114,100 @@ export function TripSheet({
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
-    const next = nextDetentForDrag(detent, drag.delta);
+    const next = nextDetentForDrag(detent, drag.delta, e.clientY);
     if (next !== detent) onDetentChange(next);
     setDrag(null);
   };
+
+  // Boundary-overscroll on the content scroller drives sheet detent changes:
+  // upward gesture from medium expands the sheet, downward gesture from
+  // expanded (only when content is at scrollTop=0) shrinks it back to medium.
+  // Otherwise native scroll runs normally. Implemented with native touch +
+  // wheel listeners so we can preventDefault to suppress native scroll once we
+  // decide to take over the gesture.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    let touchStartY: number | null = null;
+    let mode: "idle" | "scroll" | "drag" = "idle";
+    let dragStartY = 0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+      mode = "idle";
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (touchStartY === null) return;
+      const y = e.touches[0].clientY;
+      const dy = y - touchStartY;
+
+      if (mode === "idle") {
+        const atTop = el.scrollTop <= 0;
+        if (
+          atTop &&
+          detent === "medium" &&
+          dy < -SCROLL_INTERCEPT_THRESHOLD
+        ) {
+          mode = "drag";
+          dragStartY = touchStartY;
+        } else if (
+          atTop &&
+          detent === "expanded" &&
+          dy > SCROLL_INTERCEPT_THRESHOLD
+        ) {
+          mode = "drag";
+          dragStartY = touchStartY;
+        } else if (Math.abs(dy) > 4) {
+          mode = "scroll";
+        }
+      }
+
+      if (mode === "drag") {
+        e.preventDefault();
+        setDrag({ startY: dragStartY, delta: y - dragStartY });
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (mode === "drag") {
+        const releaseY =
+          e.changedTouches[0]?.clientY ?? touchStartY ?? window.innerHeight;
+        const delta = releaseY - dragStartY;
+        const next = nextDetentForDrag(detent, delta, releaseY);
+        if (next !== detent) onDetentChange(next);
+        setDrag(null);
+      }
+      touchStartY = null;
+      mode = "idle";
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (el.scrollTop > 0) return;
+      if (detent === "medium" && e.deltaY < -10) {
+        e.preventDefault();
+        onDetentChange("expanded");
+      } else if (detent === "expanded" && e.deltaY > 10) {
+        e.preventDefault();
+        onDetentChange("medium");
+      }
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd);
+    el.addEventListener("touchcancel", onTouchEnd);
+    el.addEventListener("wheel", onWheel, { passive: false });
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
+      el.removeEventListener("wheel", onWheel);
+    };
+  }, [detent, onDetentChange]);
 
   const handleDateLabelClick = () => {
     if (detent === "closed") onDetentChange("medium");
@@ -184,6 +290,7 @@ export function TripSheet({
       </div>
 
       <div
+        ref={scrollerRef}
         className="relative flex-1 overflow-y-auto"
         style={{ maxHeight: "calc(100% - 64px)" }}
       >
