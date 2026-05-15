@@ -56,6 +56,22 @@ export function MapCanvas({
     onPinTapRef.current = onPinTap;
   }, [onPinTap]);
 
+  // Padding the camera uses so markers land above the sheet rather than under
+  // it. `sheetHeightPx` is measured by a ResizeObserver in TripSheet and lags
+  // the detent state by a frame on first open, so we fall back to ~60dvh (the
+  // medium-detent target) for the initial fit. The later ResizeObserver tick
+  // triggers a refit through the sheet-change effect.
+  const getViewPadding = () => {
+    if (!sheetOpen) return { top: 80, left: 24, right: 24, bottom: 80 };
+    const measured =
+      sheetHeightPx > 0
+        ? sheetHeightPx
+        : Math.round(
+            (typeof window === "undefined" ? 720 : window.innerHeight) * 0.6,
+          );
+    return { top: 80, left: 24, right: 24, bottom: measured + 24 };
+  };
+
   const stopsWithPoints = useMemo<StopWithPoint[]>(() => {
     const byId = new Map(destinations.map((d) => [d.id, d]));
     return day.stops
@@ -174,10 +190,12 @@ export function MapCanvas({
 
       // fit bounds — Apple Maps style arc-out then tighten
       if (stopsWithPoints.length === 0) return;
+      const padding = getViewPadding();
       if (stopsWithPoints.length === 1) {
         map.flyTo({
           center: [stopsWithPoints[0].lng, stopsWithPoints[0].lat],
           zoom: 14,
+          padding,
           duration: 1200,
           essential: true,
         });
@@ -193,12 +211,6 @@ export function MapCanvas({
         [Math.min(...lngs), Math.min(...lats)],
         [Math.max(...lngs), Math.max(...lats)],
       ];
-      const tightenPadding = {
-        top: 80,
-        left: 24,
-        right: 24,
-        bottom: sheetOpen ? sheetHeightPx + 24 : 80,
-      };
 
       // detach any prior pending fit handler so we don't stack
       if (flyToFitHandler.current) {
@@ -211,7 +223,7 @@ export function MapCanvas({
           flyToFitHandler.current = null;
         }
         map.fitBounds(bounds, {
-          padding: tightenPadding,
+          padding: getViewPadding(),
           maxZoom: 15,
           duration: 700,
           essential: true,
@@ -223,6 +235,7 @@ export function MapCanvas({
       map.flyTo({
         center: centroid,
         zoom: 12,
+        padding,
         speed: 0.8,
         curve: 1.6,
         essential: true,
@@ -238,7 +251,20 @@ export function MapCanvas({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || stopsWithPoints.length === 0) return;
-    if (stopsWithPoints.length === 1) return;
+    const padding = getViewPadding();
+    // When a stop is selected we leave its dedicated recenter effect in charge
+    // so the two animations don't fight. Otherwise re-fit the day's bounds —
+    // or, on single-stop days, recenter on the lone marker.
+    if (selectedStopId) return;
+    if (stopsWithPoints.length === 1) {
+      map.easeTo({
+        center: [stopsWithPoints[0].lng, stopsWithPoints[0].lat],
+        padding,
+        duration: 600,
+        essential: true,
+      });
+      return;
+    }
     const lngs = stopsWithPoints.map((s) => s.lng);
     const lats = stopsWithPoints.map((s) => s.lat);
     const bounds: LngLatBoundsLike = [
@@ -246,17 +272,12 @@ export function MapCanvas({
       [Math.max(...lngs), Math.max(...lats)],
     ];
     map.fitBounds(bounds, {
-      padding: {
-        top: 80,
-        left: 24,
-        right: 24,
-        bottom: sheetOpen ? sheetHeightPx + 24 : 80,
-      },
+      padding,
       maxZoom: 15,
       duration: 600,
       essential: true,
     });
-  }, [sheetOpen, sheetHeightPx, stopsWithPoints]);
+  }, [sheetOpen, sheetHeightPx, stopsWithPoints, selectedStopId]);
 
   // route draw-on animation on day change
   useEffect(() => {
@@ -319,16 +340,12 @@ export function MapCanvas({
     if (!stop) return;
     map.easeTo({
       center: [stop.lng, stop.lat],
-      padding: {
-        bottom: sheetHeightPx,
-        top: 80,
-        left: 24,
-        right: 24,
-      },
+      padding: getViewPadding(),
       duration: 600,
       essential: true,
     });
-  }, [selectedStopId, stopsWithPoints, sheetHeightPx]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStopId, stopsWithPoints, sheetHeightPx, sheetOpen]);
 
   // selected-pin styling — class-only; Mapbox owns el.style.transform for positioning
   useEffect(() => {

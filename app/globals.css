@@ -251,6 +251,88 @@ main {
   opacity: 1;
 }
 
+/* Sticky-note board: warm-yellow squares with overlap + rotation, sharing the
+   album-card stack pattern (margin-left for fan, ±5° tilt for handmade feel). */
+.sticky-card {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  background: #fff59d;
+  border-radius: 2px;
+  padding: 12px;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.12),
+    0 6px 14px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: "Caveat", "Marker Felt", "Bradley Hand", "Comic Sans MS",
+    "Segoe Print", cursive;
+}
+.sticky-note {
+  cursor: text;
+}
+.sticky-text {
+  font-size: 17px;
+  line-height: 1.2;
+  color: #1d1d1f;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  margin: 0;
+  letter-spacing: 0.005em;
+}
+.sticky-note:hover {
+  transform: rotate(0deg) scale(1.04) !important;
+  z-index: 100 !important;
+}
+.sticky-note:hover .album-remove {
+  opacity: 1;
+}
+.sticky-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: transparent;
+  box-shadow: none;
+  border: 1.5px dashed #c4c4c4;
+  color: #999999;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-family: var(--font-text), -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+  border-radius: 6px;
+  z-index: 50;
+  cursor: pointer;
+}
+.sticky-add:hover {
+  color: #666666;
+  border-color: #9a9a9a;
+}
+.sticky-draft {
+  background: #fff59d;
+}
+.sticky-textarea {
+  width: 100%;
+  height: 100%;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 17px;
+  line-height: 1.2;
+  color: #1d1d1f;
+  padding: 0;
+  letter-spacing: 0.005em;
+}
+.sticky-textarea::placeholder {
+  color: rgba(29, 29, 31, 0.32);
+}
+
 /* Commute legs: dotted connector with a centered pill between stop cards. */
 .commute-row {
   position: relative;

@@ -30,21 +30,14 @@ const DRAG_THRESHOLD = 72;
 // Pixels of finger travel on the content scroller before we decide whether the
 // gesture is a sheet drag or a content scroll.
 const SCROLL_INTERCEPT_THRESHOLD = 8;
-// When dismissing the expanded sheet by dragging it down, releasing with the
-// finger above this fraction of the viewport snaps to medium instead of
-// closed. Below it, the sheet dismisses.
-const MID_VS_DISMISS_RATIO = 0.3;
 
-function nextDetentForDrag(
-  detent: SheetDetent,
-  delta: number,
-  releaseY: number,
-): SheetDetent {
+// Step the sheet one detent at a time: drag down from expanded → medium, from
+// medium → closed. Upward drags climb the same ladder. This gives every
+// release a single, predictable target rather than depending on where the
+// finger happened to land.
+function nextDetentForDrag(detent: SheetDetent, delta: number): SheetDetent {
   if (delta > DRAG_THRESHOLD) {
-    if (detent === "expanded") {
-      const cutoff = window.innerHeight * MID_VS_DISMISS_RATIO;
-      return releaseY < cutoff ? "medium" : "closed";
-    }
+    if (detent === "expanded") return "medium";
     return "closed";
   }
   if (delta < -DRAG_THRESHOLD) {
@@ -114,7 +107,7 @@ export function TripSheet({
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
-    const next = nextDetentForDrag(detent, drag.delta, e.clientY);
+    const next = nextDetentForDrag(detent, drag.delta);
     if (next !== detent) onDetentChange(next);
     setDrag(null);
   };
@@ -175,7 +168,7 @@ export function TripSheet({
         const releaseY =
           e.changedTouches[0]?.clientY ?? touchStartY ?? window.innerHeight;
         const delta = releaseY - dragStartY;
-        const next = nextDetentForDrag(detent, delta, releaseY);
+        const next = nextDetentForDrag(detent, delta);
         if (next !== detent) onDetentChange(next);
         setDrag(null);
       }
@@ -302,7 +295,11 @@ export function TripSheet({
           <div />
         </div>
         {selectedDest ? (
-          <StopDetail destination={selectedDest} onBack={onClearStop} />
+          <StopDetail
+            destination={selectedDest}
+            dayId={day.id}
+            onBack={onClearStop}
+          />
         ) : (
           <DayOverview
             day={day}

@@ -98,7 +98,9 @@ export function PhotoGallery({ destinationId }: Props) {
               className="album-card album-photo group"
               style={{
                 transform: `rotate(${rotationFor(p.id)}deg) translateX(${stackOffsetFor(p.id)}px)`,
-                marginLeft: i === 0 ? -8 : -16,
+                // First photo sits clear of the Add button; subsequent photos
+                // overlap each other to keep the polaroid-stack look.
+                marginLeft: i === 0 ? 16 : -16,
                 zIndex: 10 + i,
               }}
             >

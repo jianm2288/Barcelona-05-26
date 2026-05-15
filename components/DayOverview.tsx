@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Bed,
   ForkKnife,
@@ -11,10 +11,12 @@ import {
   Train,
   Storefront,
   SealCheck,
+  NotePencil,
   type Icon,
 } from "@phosphor-icons/react";
 import type { Day, Destination, DestinationCategory } from "@/lib/types";
 import { useCommutes } from "@/lib/hooks/useCommutes";
+import { listNotedDestinations } from "@/lib/notes";
 import { CommutePill } from "./CommutePill";
 import { DayPhotos } from "./DayPhotos";
 
@@ -39,6 +41,19 @@ type Props = {
 export function DayOverview({ day, destinations, onStopTap }: Props) {
   const byId = new Map(destinations.map((d) => [d.id, d]));
   const { legs } = useCommutes(day, destinations);
+  const [notedIds, setNotedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    let alive = true;
+    listNotedDestinations(day.id)
+      .then((ids) => {
+        if (alive) setNotedIds(ids);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [day.id]);
 
   return (
     <div className="px-5 pb-10 pt-14">
@@ -90,6 +105,14 @@ export function DayOverview({ day, destinations, onStopTap }: Props) {
                       <span className="text-body-strong text-ink">
                         {dest.name}
                       </span>
+                      {notedIds.has(dest.id) && (
+                        <NotePencil
+                          size={14}
+                          weight="duotone"
+                          className="text-action"
+                          aria-label="Has notes"
+                        />
+                      )}
                     </span>
                     <span className="block text-caption text-ink-48">
                       {dest.region} · {stop.mode}

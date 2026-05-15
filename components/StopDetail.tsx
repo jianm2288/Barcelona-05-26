@@ -5,13 +5,15 @@ import type { Destination } from "@/lib/types";
 import { loadPoi, type PoiData } from "@/lib/mapbox/poi";
 import { PhotoGallery } from "./PhotoGallery";
 import { PlacePhotos } from "./PlacePhotos";
+import { StopNotes } from "./StopNotes";
 
 type Props = {
   destination: Destination;
+  dayId: string;
   onBack: () => void;
 };
 
-export function StopDetail({ destination, onBack }: Props) {
+export function StopDetail({ destination, dayId, onBack }: Props) {
   const [poi, setPoi] = useState<PoiData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -46,6 +48,8 @@ export function StopDetail({ destination, onBack }: Props) {
           <PoiRow label="Hours" value={poi?.hours ?? null} loading={loading} />
           <PoiRow label="Phone" value={poi?.phone ?? null} loading={loading} />
         </dl>
+
+        <StopNotes dayId={dayId} destinationId={destination.id} />
 
         <PhotoGallery destinationId={destination.id} />
       </div>
